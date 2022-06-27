@@ -1,0 +1,12 @@
+*.bak
+*.err
+*.lk1
+*.mk1
+*.mk
+*.map
+*.obj
+*.sym
+*.tgt
+*.wpj
+*.PRJ
+*.DSK
