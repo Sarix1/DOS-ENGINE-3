@@ -10,3 +10,6 @@
 *.wpj
 *.PRJ
 *.DSK
+makefile
+.vscode/settings.json
+/unused
