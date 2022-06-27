@@ -10,7 +10,7 @@ void drawObject(Object_t* obj)
         vecs2scaleRotV(obj->points, obj->poly->points, obj->poly->num_points, obj->scale, obj->dir);
         obj->last_angle = obj->angle;
     }
-    drawShape(vec2fixpToInt(obj->pos), obj->points, obj->num_points, obj->color);
+    drawShapeScreen(vec2fixpToInt(obj->pos), obj->points, obj->num_points, obj->color);
 }
 
 void draw()

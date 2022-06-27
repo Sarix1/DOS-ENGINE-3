@@ -85,5 +85,8 @@ void drawRectFrame      (int x, int y, int w, int h, byte color);
 void drawRectFrame_fast (int x, int y, int w, int h, byte color);
 void drawCircleFill     (int x, int y, int diameter, byte color);
 void drawCircleFrame    (int x, int y, int diameter, byte color);
-
+//void drawVisible(Visible_t* vis, int x, int y)
+void drawShape          (Vec2 pos, Vec2* points, int num_points, byte color);
+void drawFixpShape      (Vec2 pos, Vec2* points, int num_points, byte color);
+void drawShapeScreen    (Vec2 pos, Vec2* points, int num_points, byte color);
 #endif/* GFX_H */
