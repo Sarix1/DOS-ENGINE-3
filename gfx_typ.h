@@ -2,7 +2,7 @@
 #define GFX_DEFS_H
 
 #include "types.h"
-#include "mat_typ.h"
+#include "math_typ.h"
 
 typedef struct
 {

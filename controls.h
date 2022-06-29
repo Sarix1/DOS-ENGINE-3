@@ -1,7 +1,7 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
-#include "mat_def.h"
+#include "math_def.h"
 
 #define CONTROL_UP    BIT_0
 #define CONTROL_DOWN  BIT_1

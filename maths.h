@@ -1,8 +1,8 @@
 #ifndef MATHS_H
 #define MATHS_H
 
-#include "mat_def.h"
-#include "mat_typ.h"
+#include "math_def.h"
+#include "math_typ.h"
 
 //externs
 extern const uint16_t SinTable[SIN_TABLE_SIZE];

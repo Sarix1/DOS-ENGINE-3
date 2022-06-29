@@ -504,6 +504,7 @@ void drawFixpShape(Vec2 pos, Vec2* points, int num_points, byte color)
     drawLineFixp( vec2add(points[i],pos),  vec2add(points[0],pos),  color );
 }
 
+// draw shape with aspect ratio correction
 void drawShapeScreen(Vec2 pos, Vec2* points, int num_points, byte color)
 {
     int i;

@@ -13,7 +13,7 @@ typedef struct
     int         offset_x;
     int         offset_y;
     time_t      frame;
-    bool        init;
+    bool        init : 1;
 } Video_t;
 
 #endif/* VID_TYP_H */

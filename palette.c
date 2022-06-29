@@ -1,8 +1,9 @@
-#include <dos.h>
+//#include <dos.h>
+#include <conio.h>
 #include "common.h"
 #include "palette.h"
 #include "vid_def.h"
-#include "mat_def.h"
+#include "math_def.h"
 
 void setVGAPalette(Palette_t* pal)
 {

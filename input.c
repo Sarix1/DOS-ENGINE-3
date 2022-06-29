@@ -1,8 +1,10 @@
 #include <dos.h>
+#include <conio.h>
 #include "common.h"
 #include "input.h"
+#include "keys.h"
 #include "controls.h"
-#include "time.h"
+#include "timer.h"
 
 Input_t g_Input = {0};
 KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
@@ -111,13 +113,13 @@ void initKeyHandler()
     byte far *bios_key_state;
     asm cli
     // save address of current keyhandler interrupt function
-    oldKeyHandler = _dos_getvect(KEYHANDLER_INT);
+    oldKeyHandler = getvect(KEYHANDLER_INT);
     // caps lock & num lock off
     bios_key_state = MK_FP(0x040, 0x017);
     *bios_key_state &= (~(32|64));
     oldKeyHandler(); 
     // replace old keyhandler with new keyhandler function
-    _dos_setvect(KEYHANDLER_INT, keyHandler);
+    setvect(KEYHANDLER_INT, keyHandler);
     asm sti
 }
 
@@ -125,7 +127,7 @@ void quitKeyHandler()
 {
     // restore old keyhandler
     asm cli
-    _dos_setvect(KEYHANDLER_INT, oldKeyHandler);
+    setvect(KEYHANDLER_INT, oldKeyHandler);
     asm sti
 }
 

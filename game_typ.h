@@ -2,7 +2,7 @@
 #define GAME_STRUCTS_H
 
 #include "common.h"
-#include "mat_def.h"
+#include "math_def.h"
 #include "gfx_typ.h"
 
 typedef struct
@@ -34,6 +34,7 @@ typedef struct
     id_t max_id;
     id_t id_capacity;
     id_t player_id;
+    bool init : 1;
 } GameData_t;
 
 #endif/* GAME_STRUCTS_H */

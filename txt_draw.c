@@ -29,17 +29,26 @@ void drawChar8x8(int x, int y, const byte symbol, byte color, byte effect)
     }
 }
 
-void drawText(int x, int y, int w, int h, const char* string, byte color, byte effect)
+int drawText(int x, int y, int w, int h, const char* string, byte color, byte effect)
 {
     int x_offset = x;
+    int newlines = 0;
+    
+    if (w == 0)
+        w = SCREEN_WIDTH-x;
+    if (h == 0)
+        h = SCREEN_HEIGHT-y;
+    
     w += x;
     h += y;
+    
     while (*string != '\0' && y < h)
     {
         if (*string == '\n' || x_offset > w+x)
         {
             y += 8;
             x_offset = x;
+            newlines++;
         }
         else if (*string == '\r')
             x_offset = x;
@@ -53,6 +62,8 @@ void drawText(int x, int y, int w, int h, const char* string, byte color, byte e
         }
         string++;
     }
+
+    return newlines;
 }
 
 void drawText_fast(int x, int y, const char* string, byte color, byte effect, int len)

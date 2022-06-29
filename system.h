@@ -3,7 +3,7 @@
 
 void init();
 void quit();
-void input();
+void input();  
 void physics();
 void draw();
 void render();

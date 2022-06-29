@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "mat_def.h"
+#include "math_def.h"
 
 const uint16_t SinTable[SIN_TABLE_SIZE] =
 {

@@ -85,6 +85,7 @@ void deleteLastObject()
 
 id_t spawnShip(int16_t x, int16_t y, brad angle)
 {
-    static Poly_t Poly = { {{10,0}, {-10,-8}, {-5,0}, {-10,8}},  4 };
-    createObject(x, y, angle, 0, F(10), F(1), &Poly, GREEN);
+    static Poly_t Poly = { {{10,0}, {-10,-8}, {-5,0}, {-10,8}}, 4 };
+
+    return createObject(x, y, angle, 0, F(10), F(1), &Poly, GREEN);
 }

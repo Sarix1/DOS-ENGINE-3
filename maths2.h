@@ -2,8 +2,8 @@
 #define MATHS2_H
 
 #include "common.h"
-#include "mat_def.h"
-#include "mat_typ.h"
+#include "math_def.h"
+#include "math_typ.h"
 
 inline int64_t square(int32_t x)
 {
