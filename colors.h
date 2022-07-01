@@ -20,6 +20,8 @@
 #define WHITE           15
 
 #define COLOR_UI_TEXT   LIGHT_BLUE
-#define COLOR_SHIP      LIGHT_GREEN
+#define COLOR_DEBUG     LIGHT_BLUE
+#define COLOR_SHIP      LIGHT_MAGENTA
+#define COLOR_BG        BLUE
 
 #endif/* COLORS_H */

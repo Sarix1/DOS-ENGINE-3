@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "game.h"
 
+/*
 #define MAX_PARTICLES 256
 
 typedef struct
@@ -17,16 +18,15 @@ typedef struct
 } Particle_t;
 
 Particle_t particles[MAX_PARTICLES];
-
+*/
+/*
 void drawStars()
 {
     static Vec3 stars[256];
 
     int i,x,y;
-
-
-
 }
+*/
 
 void drawObject(Object_t* obj)
 {
@@ -51,15 +51,14 @@ void drawDebug()
     for (i = 0; i < NUM_DEBUG; i++)
     {
         if (debug[i][0] != '\0')
-            y += ((drawText(0, y, 0, 0, debug[i], AUTO, WHITE, TEXT_FX_NONE) + 1) << 3);
+            y += ((drawText(0, y, 0, 0, debug[i], AUTO, COLOR_DEBUG, TEXT_FX_NONE) + 1) << 3);
     }
 }
 #endif
 
 void draw()
 {
-    drawFill(BLUE);
-    drawStars();
+    drawFill(COLOR_BG);
     drawObject(PLAYER_OBJ);
 
     #if DEBUG == 1
