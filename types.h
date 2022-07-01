@@ -26,8 +26,10 @@ typedef uint16_t control_t;
 typedef uint16_t id_t;
 
 typedef void (*fnp)();
-typedef void (*fnp_ptr)(void*);
 typedef void (*fnp_int)(int);
 typedef void (*fnp_2int)(int, int);
+typedef void (*fnp_ptr)(void*);
+typedef int (*i_fnp)();
+typedef int (*i_fnp_int)(int);
 
 #endif/* TYPES_H */

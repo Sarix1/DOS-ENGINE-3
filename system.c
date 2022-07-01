@@ -27,7 +27,7 @@ int quitGame();
 
 int confirm();
 
-static int (*SysFuncs[NUM_SYSTEMS][2])(void) =
+static i_fnp SystemFuncs[NUM_SYSTEMS][2] =
 {
     {initVideo, quitVideo},
     {initInput, quitInput},
@@ -48,7 +48,7 @@ static int initSubSystem(int sus)
         return SUCCESS;
     }
 
-    status = SysFuncs[sus][0]();
+    status = SystemFuncs[sus][0]();
     if (status == SUCCESS)
     {
         g_System.init[sus] = INITIALIZED;
@@ -70,7 +70,7 @@ static int quitSubSystem(int sus)
     if (isInit(sus) == UNINITIALIZED)    
         return SUCCESS;
 
-    status = SysFuncs[sus][1]();
+    status = SystemFuncs[sus][1]();
     if (status == SUCCESS)
     {
         g_System.init[sus] = UNINITIALIZED;
