@@ -2,16 +2,15 @@
 #include <conio.h>
 #include "common.h"
 #include "input.h"
-#include "keys.h"
-#include "controls.h"
 #include "timer.h"
+#include "sys_typ.h"
 
 Input_t g_Input = {0};
 KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
 control_t player_control;
 
 // to-do: change keyevent to InputEvent so we can reuse it for mouse/joystick
-int gameControl(KeyEvent_t event)
+static int gameControl(KeyEvent_t event)
 {
     // later, commands will be added as an abstraction layer
     // keybinding-to-command-id indexes a command table
@@ -46,7 +45,7 @@ int gameControl(KeyEvent_t event)
     return HANDLED;
 }
 
-void handleInputEvents() // keymap should be an array of commands
+static void handleInputEvents() // keymap should be an array of commands
 {
     while (g_Input.queue_head != g_Input.queue_tail) 
     {
@@ -61,7 +60,7 @@ void handleInputEvents() // keymap should be an array of commands
     }
 }
 
-void pushKeyEvent(KeyEvent_t event)
+static void pushKeyEvent(KeyEvent_t event)
 {
     if ((byte)(g_Input.queue_tail+1) != g_Input.queue_head)
         g_Input.queue[g_Input.queue_tail++] = event;
@@ -75,6 +74,7 @@ static void handleScanCode(byte scan)
     if (scan == KEY_SPECIAL)
     {
         status = 0x80;
+        
         return;
     }
 
@@ -101,14 +101,14 @@ static void handleScanCode(byte scan)
 
 static void interrupt (far *oldKeyHandler)(void);
 
-void interrupt keyHandler()
+static void interrupt keyHandler()
 {
     while (inportb(0x64) & 1)
         handleScanCode(inportb(0x60));
     outportb(0x20, 0x20);
 }
 
-void initKeyHandler()
+static void initKeyHandler()
 {
     byte far *bios_key_state;
     asm cli
@@ -123,7 +123,7 @@ void initKeyHandler()
     asm sti
 }
 
-void quitKeyHandler()
+static void quitKeyHandler()
 {
     // restore old keyhandler
     asm cli
@@ -136,14 +136,14 @@ int initInput()
     initKeyHandler();
     g_Input.keymap = &KeyMap_Basic;
 
-    return 1;
+    return SUCCESS;
 }
 
 int quitInput()
 {
     quitKeyHandler();
 
-    return 0;
+    return SUCCESS;
 }
 
 void input()

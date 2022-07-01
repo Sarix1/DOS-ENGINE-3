@@ -5,9 +5,9 @@
 
 enum TEXT_FX
 {
-    TEXT_FX_NONE     = 0,
-    TEXT_FX_FLAG     = 1,
-    TEXT_FX_GRADIENT = 2
+    TEXT_FX_NONE = 0,
+    TEXT_FX_FLAG = 1,
+    TEXT_FX_GRAD = 2
 };
 
 typedef struct

@@ -8,12 +8,11 @@ typedef struct
 {
     Palette_t   palette;
     byte*       screen;
-    byte far*   offScreen;
-    byte far*   drawSurface;
+    byte far*   off_screen;
+    byte far*   surface;
     int         offset_x;
     int         offset_y;
     time_t      frame;
-    bool        init : 1;
 } Video_t;
 
 #endif/* VID_TYP_H */

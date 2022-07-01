@@ -9,7 +9,7 @@
 void drawPixels_fast(byte* pixels, int x, int y, int w, int h)
 {
     int row = 0;
-    byte far* pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+    byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
     
     while (row < h)
     {
@@ -47,7 +47,7 @@ void drawPixels(byte* pixels, int x, int y, int w, int h)
         if (y+h > SCREEN_HEIGHT)
             h -= (y+h - SCREEN_HEIGHT);
         
-        pix = g_Video.drawSurface + Y_OFFSET(y+row) + (x+x_offset);
+        pix = g_Video.surface + Y_OFFSET(y+row) + (x+x_offset);
         pixels += (w*row);
         
         while (row < h)
@@ -93,7 +93,7 @@ void drawLineVert(int x, int y, int len, byte color)
         {
             if (y+len > SCREEN_HEIGHT)
                 len = SCREEN_HEIGHT-y;
-            pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+            pix = g_Video.surface + Y_OFFSET(y) + x;
             for (; (len--); pix += SCREEN_WIDTH)
                 *pix = color;
         }
@@ -147,7 +147,7 @@ void drawLineVert2(int x, int y, int len, byte color)
         {
             if (y+len > SCREEN_HEIGHT)
                 len = SCREEN_HEIGHT-y;
-            pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+            pix = g_Video.surface + Y_OFFSET(y) + x;
             for (; (len--); pix += SCREEN_WIDTH)
                 *pix = color;
         }
@@ -258,7 +258,7 @@ void drawLineFixp_fast(Vec2 p0, Vec2 p1, byte color)
 // no boundary check or clipping
 void drawRectFill_fast(int x, int y, int w, int h, byte color)
 {
-    byte far* pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+    byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
     for (; (h--); pix += SCREEN_WIDTH)
         memset(pix, color, w);
 }
@@ -287,7 +287,7 @@ void drawRectFill(int x, int y, int w, int h, byte color)
                     w = SCREEN_WIDTH-x;
                 if (y+h > SCREEN_HEIGHT)
                     h = SCREEN_HEIGHT-y;
-                pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+                pix = g_Video.surface + Y_OFFSET(y) + x;
                 for (; (h--); pix += SCREEN_WIDTH)
                     memset(pix, color, w);
             }
@@ -328,7 +328,7 @@ void drawRectFrame(int x0, int y0, int w, int h, byte color)
     if (!sides) // if sides are in orbit, die
         return;
 
-    pix = g_Video.drawSurface + Y_OFFSET(y0) + x0;
+    pix = g_Video.surface + Y_OFFSET(y0) + x0;
     w = x1-x0;
     h = y1-y0;
     
@@ -372,7 +372,7 @@ void drawRectFrame(int x0, int y0, int w, int h, byte color)
 void drawRectFrame_fast(int x, int y, int w, int h, byte color)
 {
     int i;
-    byte far* pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+    byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
 
     memset(pix, color, w);
     if (h > 1)
@@ -391,7 +391,7 @@ void drawRectFrame_fast(int x, int y, int w, int h, byte color)
 
 void drawCircleFill(int x, int y, int diameter, byte color)
 {
-    const byte far* center  = g_Video.drawSurface + Y_OFFSET(y) + x;
+    const byte far* center  = g_Video.surface + Y_OFFSET(y) + x;
     const int radius        = (diameter/2);
     const int remainder     = (diameter%2);
     const int r_offset      = Y_OFFSET(remainder^1);
@@ -425,7 +425,7 @@ void drawCircleFill(int x, int y, int diameter, byte color)
 
 void drawCircleFrame(int x, int y, int diameter, byte color)
 {
-    const byte far* center  = g_Video.drawSurface + Y_OFFSET(y) + x;
+    const byte far* center  = g_Video.surface + Y_OFFSET(y) + x;
     const int radius        = (diameter/2)+1;
     const int not_remainder = (diameter%2)^1;
     const fixp inv_radius    = FIX_ONE / (radius == 0 ? 1 : radius);

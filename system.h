@@ -1,6 +1,8 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include "sys_typ.h"
+
 void init();
 void quit();
 void input();  

@@ -1,9 +1,9 @@
 #include "input.h"
 #include "keys.h"
 
-inline char keyToAscii(byte keycode)
+static inline char keyToAscii(byte keycode)
 {
-    char c;
+    byte c;
     if (keycode < 128)
     {
         if ((isKeyDown(KEY_LSHIFT) | isKeyDown(KEY_RSHIFT)) ^ g_Input.caps_lock)
@@ -20,19 +20,19 @@ inline char keyToAscii(byte keycode)
     return 0;
 }
 
-inline void cursorLeft(TextField_t* text)
+static inline void cursorLeft(TextField_t* text)
 {
     if (text->cursor > text->start)
         text->cursor--;
 }
 
-inline void cursorRight(TextField_t* text)
+static inline void cursorRight(TextField_t* text)
 {
     if (text->cursor < text->length)
         text->cursor++;
 }
 
-inline void writeChar(TextField_t* text, char c) // inline
+static inline void writeChar(TextField_t* text, byte c) // inline
 {
     if (text->length < text->capacity)
     {
@@ -49,7 +49,7 @@ inline void writeChar(TextField_t* text, char c) // inline
 }
 
 // could be a generalized function accepting cursor, length, buffer, start as arguments
-inline void eraseChar(TextField_t* text)
+static inline void eraseChar(TextField_t* text)
 {
     if (text->cursor > text->start)
     {

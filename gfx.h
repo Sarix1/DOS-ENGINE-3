@@ -5,26 +5,30 @@
 #include "common.h"
 #include "video.h"
 #include "gfx_typ.h"
-#include "colors.h"
 
 inline byte getPixel(int x, int y)
 {
-    return *(g_Video.drawSurface+(x) + Y_OFFSET(y));
+    return *(g_Video.surface+(x) + Y_OFFSET(y));
 }
 
 inline void setPixel(int x, int y, byte c)
 {
-    *(g_Video.drawSurface+(x) + Y_OFFSET(y)) = c;
+    *(g_Video.surface+(x) + Y_OFFSET(y)) = c;
+}
+
+inline void setPixVGA(int x, int y, byte c)
+{
+    *(g_Video.screen+(x) + Y_OFFSET(y)) = c;
 }
 
 inline void drawFill(byte color)
 {
-    memset(g_Video.drawSurface, color, SCREEN_SIZE);
+    memset(g_Video.surface, color, SCREEN_SIZE);
 }
 
 inline void drawLineHorz_fast(int x, int y, int len, byte color)
 {
-    memset(g_Video.drawSurface+(x) + Y_OFFSET(y), color, len);
+    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineHorz2_fast(int x, int y, int len, byte color)
@@ -34,12 +38,12 @@ inline void drawLineHorz2_fast(int x, int y, int len, byte color)
         x += len;
         len = -len;
     }
-    memset(g_Video.drawSurface+(x) + Y_OFFSET(y), color, len);
+    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineVert_fast(int x, int y, int len, byte color)
 {
-    byte far* pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+    byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
     for (; len--; pix += SCREEN_WIDTH)
        *pix = color;
 }
@@ -52,14 +56,14 @@ inline void drawLineVert2_fast(int x, int y, int len, byte color)
         y += len;
         len = -len;
     }
-    pix = g_Video.drawSurface + Y_OFFSET(y) + x;
+    pix = g_Video.surface + Y_OFFSET(y) + x;
     for (; len--; pix += SCREEN_WIDTH)
        *pix = color;
 }
 
 inline void drawCopy(int x, int y, byte* source, int n)
 {
-    memcpy(g_Video.drawSurface+(x) + Y_OFFSET(y), source, n);
+    memcpy(g_Video.surface+(x) + Y_OFFSET(y), source, n);
 }
 
 inline void drawPixel(int x, int y, byte color)

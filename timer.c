@@ -1,8 +1,7 @@
+#include <stdio.h>
 #include <dos.h>
-#include <conio.h>
 #include "common.h"
-#include "time_def.h"
-#include "time_typ.h"
+#include "timer.h"
 
 Timer_t g_Timer = {0};
 
@@ -24,7 +23,7 @@ static void interrupt far Timer(void)
     } 
 }
 
-void setTimer(uint16_t new_count)
+static void setTimer(uint16_t new_count)
 {
     asm cli
     outportb(CONTROL_8253, CONTROL_WORD);
@@ -33,16 +32,22 @@ void setTimer(uint16_t new_count)
     asm sti
 }
 
-void quitTimer()
+int quitTimer()
 {
     asm cli
     setvect(TIME_KEEPER_INT, old_Timer);
     setTimer(TIMER_18HZ);
     asm sti
+
+    return SUCCESS;
 }
 
-void initTimer()
+int initTimer()
 {
+    time_t t;
+    int status;
+    char str[10];
+
     g_Timer.running    = 1;
     g_Timer.time       = 0;
     g_Timer.seconds    = 0;
@@ -61,4 +66,21 @@ void initTimer()
     setvect(TIME_KEEPER_INT, &Timer);
     setTimer(TIMER_1000HZ);
     asm sti
+
+    /*
+    t = getTime();
+    delay(1000);
+    t = getTime()-t;
+    sprintf(str, "%ld", t);
+    echoMsg("\nTimer runs at: ", str, " Hz,\nExpected value: 1000 Hz\n");
+    
+    if (t == 0)
+        return ERROR_TIMER_FROZEN;
+    if (t < 900)
+        return ERROR_TIMER_SLOW;
+    if (t > 1100)
+        return ERROR_TIMER_FAST;
+    */
+
+    return SUCCESS;
 }

@@ -1,7 +1,7 @@
 #ifndef VID_DEF_H
 #define VID_DEF_H
 
-#include "colors.h"
+#include "common.h"
 
 #define VGA             0xA0000000l
 #define VIDEO_INT       0x10

@@ -10,7 +10,7 @@ void initMenu(Menu_t* menu)
 {
     int i, len, max = 0;
 
-    if (menu->w == AUTOMATIC)
+    if (menu->w == AUTO)
     {
         for (i = 0; i < menu->num_items; i++)
         {
@@ -27,9 +27,9 @@ void initMenu(Menu_t* menu)
     if (menu->selected_color == DEFAULT)        menu->selected_color = MENU_SELECTED_COLOR;
     if (menu->margin         == DEFAULT)        menu->margin         = MENU_MARGIN;
     if (menu->leading        == DEFAULT)        menu->leading        = MENU_LEADING;
-    if (menu->h              == AUTOMATIC)      menu->h              = ((menu->num_items-1) * menu->leading) + 8;
-    if (menu->x              == POS_CENTERED)   menu->x              = (SCREEN_WIDTH - menu->w) / 2;
-    if (menu->y              == POS_CENTERED)   menu->y              = (SCREEN_HEIGHT - menu->h) / 2;
+    if (menu->h              == AUTO)           menu->h              = ((menu->num_items-1) * menu->leading) + 8;
+    if (menu->x              == ALIGN_CENTER)   menu->x              = (SCREEN_WIDTH - menu->w) / 2;
+    if (menu->y              == ALIGN_CENTER)   menu->y              = (SCREEN_HEIGHT - menu->h) / 2;
 }
 
 void handleMenu(Menu_t* menu)
@@ -71,7 +71,7 @@ void drawMenu(Menu_t* menu)
         if (i == menu->selection)
         {
             color = menu->Items[i].color_selected == DEFAULT ? menu->selected_color : menu->Items[i].color_selected;
-            drawText_fast(x, y, menu->Items[i].text, color, TEXT_FX_NONE, AUTOMATIC);
+            drawText_fast(x, y, menu->Items[i].text, AUTO, color, TEXT_FX_NONE);
         }
         else
         {
@@ -79,7 +79,7 @@ void drawMenu(Menu_t* menu)
                 color = menu->Items[i].enabled == ENABLED ? menu->enabled_color : menu->disabled_color;
             else
                 color = menu->Items[i].color;
-            drawText_fast(x, y, menu->Items[i].text, color, TEXT_FX_NONE, AUTOMATIC);
+            drawText_fast(x, y, menu->Items[i].text, AUTO, color, TEXT_FX_NONE);
         }
         y += menu->leading;
     }

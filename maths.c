@@ -308,9 +308,29 @@ int lineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
+
+    return DO_INTERSECT;
+}
+
+int fixpLineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+{
+    const int64_t a1 = p1.y-p0.y;
+    const int64_t a2 = p3.y-p2.y;
+    const int64_t b1 = p0.x-p1.x;
+    const int64_t b2 = p2.x-p3.x;
+    const int64_t c1 = (a1*p0.x + b1*p0.y) >> FIX_SHIFT;
+    const int64_t c2 = (a2*p2.x + b2*p2.y) >> FIX_SHIFT;
+    const int64_t denom = (a1*b2 - a2*b1) >> FIX_SHIFT;
+    // detect parallel or collinear lines
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->y = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
 
     return DO_INTERSECT;
 }
@@ -329,9 +349,9 @@ int segSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ix = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = iy = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = iy = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
     // point not on segment p0-->p1?
     if (b1)
     {
@@ -362,6 +382,53 @@ int segSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
+int fixpSegSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+{
+    const fixp a1    = p1.y-p0.y;
+    const fixp a2    = p3.y-p2.y;
+    const fixp b1    = p0.x-p1.x;
+    const fixp b2    = p2.x-p3.x;
+    const int64_t c1    = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIX_SHIFT;
+    const int64_t c2    = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIX_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    fixp ix, iy, dx_sign, dy_sign;
+    // detect parallel or collinear lines
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    // point not on segment p0-->p1?
+    if (b1)
+    {
+        dx_sign = (fixp)(ix-p1.x) ^ (fixp)(p0.x-p1.x);
+        if (dx_sign < 0 || ABS(ix-p1.x) > ABS(b1))
+            return DONT_INTERSECT;
+    }
+    else
+    {
+        dy_sign = (fixp)(iy-p1.y) ^ (fixp)(p0.y-p1.y);
+        if (dy_sign < 0 || ABS(iy-p1.y) > ABS(a1))
+            return DONT_INTERSECT;
+    }
+    // point not on segment p2-->p3?
+    if (b2)
+    {
+        dx_sign = (fixp)(ix-p3.x) ^ (fixp)(p2.x-p3.x);
+        if (dx_sign < 0 || ABS(ix-p3.x) > ABS(b2))
+            return DONT_INTERSECT;
+    }
+    else
+    {
+        dy_sign = (fixp)(iy-p3.y) ^ (fixp)(p2.y-p3.y);
+        if (dy_sign < 0 || ABS(iy-p3.y) > ABS(a2))
+            return DONT_INTERSECT;
+    }
+
+    return DO_INTERSECT;
+}
+
 int lineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
 {
     const int32_t a1 = l1.y-l0.y;
@@ -376,9 +443,9 @@ int lineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ix = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = iy = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = iy = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
     // point not on segment p2-->p3?
     if (b2)
     {
@@ -389,6 +456,40 @@ int lineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
     else
     {
         dy_sign = (int32_t)(iy-s1.y) ^ (int32_t)(s0.y-s1.y);
+        if (dy_sign < 0 || ABS(iy-s1.y) > ABS(a2))
+            return DONT_INTERSECT;
+    }
+
+    return DO_INTERSECT;
+}
+
+int fixpLineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
+{
+    const fixp a1 = l1.y-l0.y;
+    const fixp a2 = s1.y-s0.y;
+    const fixp b1 = l0.x-l1.x;
+    const fixp b2 = s0.x-s1.x;
+    const int64_t c1 = ((int64_t)a1*l0.x + (int64_t)b1*l0.y) >> FIX_SHIFT;
+    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIX_SHIFT;
+    const int64_t denom = (int64_t)a1*b2 - (int64_t)a2*b1;
+    fixp ix, iy, dx_sign, dy_sign;
+    // detect parallel or collinear
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    // point not on segment p2-->p3?
+    if (b2)
+    {
+        dx_sign = (fixp)(ix-s1.x) ^ (fixp)(s0.x-s1.x);
+        if (dx_sign < 0 || ABS(ix-s1.x) > ABS(b2))
+            return DONT_INTERSECT;
+    }
+    else
+    {
+        dy_sign = (fixp)(iy-s1.y) ^ (fixp)(s0.y-s1.y);
         if (dy_sign < 0 || ABS(iy-s1.y) > ABS(a2))
             return DONT_INTERSECT;
     }
@@ -410,9 +511,9 @@ int raySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ix = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = iy = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = iy = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
     // point not on ray p0-->p1?
     if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
         return DONT_INTERSECT;
@@ -436,6 +537,46 @@ int raySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
+int fixpRaySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
+{
+    const fixp a1 = r1.y-r0.y;
+    const fixp a2 = s1.y-s0.y;
+    const fixp b1 = r0.x-r1.x;
+    const fixp b2 = s0.x-s1.x;
+    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIX_SHIFT;
+    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIX_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    fixp ix, iy, dx_sign, dy_sign;
+    // detect parallel or collinear
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = (((b2*c1 - b1*c2) + (denom>>1)) >> FIX_SHIFT) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) + (denom>>1)) >> FIX_SHIFT) / denom;
+    // point not on ray p0-->p1?
+    if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
+        return DONT_INTERSECT;
+    else if (r0.y < iy && r0.y > r1.y || r0.y > iy && r0.y < r1.y)
+        return DONT_INTERSECT;
+
+    // point not on segment p2-->p3?
+    if (b2)
+    {
+        dx_sign = (fixp)(ix-s1.x) ^ (fixp)(s0.x-s1.x);
+        if (dx_sign < 0 || ABS(ix-s1.x) > ABS(b2))
+            return DONT_INTERSECT;
+    }
+    else
+    {
+        dy_sign = (fixp)(iy-s1.y) ^ (fixp)(s0.y-s1.y);
+        if (dy_sign < 0 || ABS(iy-s1.y) > ABS(a2))
+            return DONT_INTERSECT;
+    }
+
+    return DO_INTERSECT;
+}
+
 int rayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
 {
     const int32_t a1 = r1.y - r0.y;
@@ -450,9 +591,35 @@ int rayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ix = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = iy = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = iy = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
+    // point not on ray p0-->p1?
+    if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
+        return DONT_INTERSECT;
+    else if (r0.y < iy && r0.y > r1.y || r0.y > iy && r0.y < r1.y)
+        return DONT_INTERSECT;
+
+    return DO_INTERSECT;
+}
+
+int fixpRayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
+{
+    const fixp a1 = r1.y - r0.y;
+    const fixp a2 = l1.y - l0.y;
+    const fixp b1 = r0.x - r1.x;
+    const fixp b2 = l0.x - l1.x;
+    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIX_SHIFT;
+    const int64_t c2 = ((int64_t)a2*l0.x + (int64_t)b2*l0.y) >> FIX_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    fixp ix, iy;
+    // detect parallel or collinear
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
     // point not on ray p0-->p1?
     if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
         return DONT_INTERSECT;
@@ -476,9 +643,40 @@ int rayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
-    // +denom/2 fixes integer rounding error
-    intersect->x = ix = ((b2*c1 - b1*c2) + denom/2) / denom;
-    intersect->y = iy = ((a1*c2 - a2*c1) + denom/2) / denom;
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = ((b2*c1 - b1*c2) + (denom>>1)) / denom;
+    intersect->y = iy = ((a1*c2 - a2*c1) + (denom>>1)) / denom;
+    // point not on ray p0-->p1?
+    if (b1 && (p0.x < ix && p0.x > p1.x || p0.x > ix && p0.x < p1.x))
+        return DONT_INTERSECT;
+    else if (p0.y < iy && p0.y > p1.y || p0.y > iy && p0.y < p1.y)
+        return DONT_INTERSECT;
+    // point not on ray p2-->p3?
+    if (b1 && (p2.x < ix && p2.x > p3.x || p2.x > ix && p2.x < p3.x))
+        return DONT_INTERSECT;
+    else if (p2.y < iy && p2.y > p3.y || p2.y > iy && p2.y < p3.y)
+        return DONT_INTERSECT;
+
+    return DO_INTERSECT;
+}
+
+int fixpRayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+{
+    const fixp a1 = p1.y-p0.y;
+    const fixp a2 = p3.y-p2.y;
+    const fixp b1 = p0.x-p1.x;
+    const fixp b2 = p2.x-p3.x;
+    const int64_t c1 = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIX_SHIFT;
+    const int64_t c2 = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIX_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    fixp ix, iy;
+    // detect parallel or collinear
+    if (denom == 0)
+        return DONT_INTERSECT;
+    // line intersection point
+    // +(denom>>1) fixes integer rounding error
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
     // point not on ray p0-->p1?
     if (b1 && (p0.x < ix && p0.x > p1.x || p0.x > ix && p0.x < p1.x))
         return DONT_INTERSECT;

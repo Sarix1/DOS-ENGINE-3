@@ -19,4 +19,7 @@
 #define LIGHT_YELLOW    14
 #define WHITE           15
 
+#define COLOR_UI_TEXT   LIGHT_BLUE
+#define COLOR_SHIP      LIGHT_GREEN
+
 #endif/* COLORS_H */

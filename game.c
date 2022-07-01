@@ -2,19 +2,30 @@
 #include "game.h"
 #include "malloc_.h"
 #include "maths2.h"
-#include "colors.h"
 #include <string.h>
 
 GameData_t g_Game = {0};
 
-void initGame()
+int initGame()
 {
     g_Game.object_capacity = OBJ_CHUNK;
     g_Game.id_capacity = OBJ_CHUNK;
     g_Game.Objects = malloc(g_Game.object_capacity * sizeof(Object_t));
     g_Game.ObjectsById = calloc(g_Game.id_capacity, sizeof(void*));
 
-    g_Game.player_id = spawnShip(160, 100, DEG_90);
+    g_Game.player_id = spawnShip(160, A(100), DEG_90);
+
+    return SUCCESS;
+}
+
+int quitGame()
+{
+    g_Game.object_capacity = 0;
+    g_Game.id_capacity = 0;
+    free(g_Game.Objects);
+    free(g_Game.ObjectsById);
+
+    return SUCCESS;
 }
 
 static id_t getNewId()
@@ -87,5 +98,5 @@ id_t spawnShip(int16_t x, int16_t y, brad angle)
 {
     static Poly_t Poly = { {{10,0}, {-10,-8}, {-5,0}, {-10,8}}, 4 };
 
-    return createObject(x, y, angle, 0, F(10), F(1), &Poly, GREEN);
+    return createObject(x, y, angle, 0, F(10), F(1), &Poly, COLOR_SHIP);
 }

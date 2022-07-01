@@ -8,7 +8,7 @@
 
 extern GameData_t g_Game;
 
-void initGame();
+int initGame();
 //void quitGame();
 id_t createObject(int16_t x, int16_t y, brad angle, brad angvel,
                   fixp radius, fixp scale, Poly_t* poly, byte color);

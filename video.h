@@ -8,9 +8,8 @@
 extern Video_t g_Video;
 
 // functions
-void setVideo   (byte mode);
-int  initVideo  (byte mode);
-void quitVideo  ();
-void render();
+int  initVideo();
+int  quitVideo();
+void render   ();
 
 #endif/* VIDEO_H */

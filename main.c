@@ -1,4 +1,5 @@
 #include <stdio.h>
+//#include <i86.h> add delay to sleep while we are doing nothing
 #include "common.h"
 #include "system.h"
 #include "timer.h"
@@ -23,9 +24,8 @@ int main(void)
 
     init();
 
-    while (1)
+    while (g_System.running)
     {  
-
         if (last_tick + g_Timer.tick_time < g_Timer.time) // tick
         {
             do
