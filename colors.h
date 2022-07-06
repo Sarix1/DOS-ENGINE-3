@@ -1,27 +1,22 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#define BLANK           -1
-#define BLACK           0
-#define BLUE            1
-#define GREEN           2
-#define CYAN            3
-#define RED             4
-#define MAGENTA         5
-#define BROWN           6
-#define GREY            7
-#define DARK_GREY       8    
-#define LIGHT_BLUE      9
-#define LIGHT_GREEN     10
-#define LIGHT_CYAN      11
-#define LIGHT_RED       12
-#define LIGHT_MAGENTA   13
-#define LIGHT_YELLOW    14
-#define WHITE           15
-
-#define COLOR_UI_TEXT   LIGHT_BLUE
-#define COLOR_DEBUG     LIGHT_BLUE
-#define COLOR_SHIP      LIGHT_MAGENTA
-#define COLOR_BG        BLUE
+#define COLOR_BLANK     -1
+#define COLOR_BLACK     0
+#define COLOR_BLUE      1
+#define COLOR_GREEN     2
+#define COLOR_CYAN      3
+#define COLOR_RED       4
+#define COLOR_PURPLE    5
+#define COLOR_BROWN     6
+#define COLOR_L_GREY    7
+#define COLOR_D_GREY    8    
+#define COLOR_L_BLUE    9
+#define COLOR_L_GREEN   10
+#define COLOR_L_CYAN    11
+#define COLOR_L_RED     12
+#define COLOR_L_PURPLE  13
+#define COLOR_YELLOW    14
+#define COLOR_WHITE     15
 
 #endif/* COLORS_H */

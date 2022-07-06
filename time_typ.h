@@ -5,18 +5,29 @@
 
 typedef struct
 {
-    volatile time_t time;    // global timer
-    volatile time_t seconds; // second timer (time/1000)
-    time_t ticks;            // total game ticks
-    time_t frames;           // total frames drawn
-    time_t tick_time;        // target time interval of logic cycles
-    time_t frame_time;       // target time interval between draws
-    uint16_t tick_rate;      // target rate of logic cycles
-    uint16_t frame_rate;     // target frame rate
-    uint16_t fps;            // actual measured fps
-    fixp   fps_avg;          // average fps (frames/seconds)
-    bool running : 1;
-    bool init : 1;
+    volatile time_t time;   // global timer
+    volatile time_t seconds;// second timer
+    time_t ticks;           // total game ticks
+    time_t frames;          // total frames drawn
+    
+    int tick_rate;          // target tick rate (constant value)
+    int frame_rate;         // target frame rate (constant value)
+    
+    time_t tick_interval;   // inferred from tick_rate
+    time_t frame_interval;  // inferred from frame_rate
+    time_t clock_interval;  // for PC clock
+
+    time_t last_sec;        // lat time seconds timer was incremented
+    time_t last_tick;       // last time game logic ticked ; not used anymore
+    time_t last_frame;      // last time a frame was began to be drawn
+    time_t last_cycle;      // last time the main loop began iterating
+
+    time_t tick_accumulator; // Incremented by cycle duration, decremented by tick_interval
+    time_t fps_count;        // Counts frames in a second so far, for FPS calculation
+
+    int fps;      // actual measured fps
+    fixp fps_avg; // average fps (frames/seconds)
+
 } Timer_t;
 
 #endif/* TIME_TYP_H */

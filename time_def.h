@@ -1,6 +1,8 @@
 #ifndef TIME_H
 #define TIME_H
 
+#define OLD_CLK_RATE_10X    182 // 18.2 Hz
+#define CLOCK_RATE          1000
 #define FRAME_RATE          30
 #define TICK_RATE           30
 

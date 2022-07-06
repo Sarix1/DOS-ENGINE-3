@@ -41,16 +41,16 @@ inline int64_t fixpSquare(fixp x)
     return ((int64_t)x*x) >> FIX_SHIFT;
 }
 
-fix16_16 fix16_16_sqrt(fix16_16 x);
+fix16_16 sqrtF2F(fix16_16 x);
 inline fixp fixpSqrt(fixp x)
 {
-    return fix16_16_sqrt(x);
+    return sqrtF2F(x);
 }
 
-fix16_16 int32toFix16_16_sqrt(int32_t x);
+fix16_16 sqrtI2F(int32_t x);
 inline fixp intToFixpSqrt(int32_t x)
 {
-    return int32toFix16_16_sqrt(x);
+    return sqrtI2F(x);
 }
 
 inline fixp fixpSinAcos_slow(fixp x)
@@ -221,10 +221,10 @@ inline int64_t vec2square(Vec2 v)
     return ((int64_t)v.x*v.x + (int64_t)v.y*v.y);
 }
 
-int32_t int32_sqrt(int32_t x);
+int32_t sqrt(int32_t x);
 inline int32_t vec2Len(Vec2 v)
 {
-    return int32_sqrt((int64_t)v.x*v.x + (int64_t)v.y*v.y);
+    return sqrt((int64_t)v.x*v.x + (int64_t)v.y*v.y);
 }
 
 inline int32_t vec2dist(Vec2 a, Vec2 b)

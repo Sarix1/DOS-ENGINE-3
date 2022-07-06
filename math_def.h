@@ -3,17 +3,14 @@
 
 #include "common.h"
 
-// common math
-#define MIN(a,b)                (((a) < (b)) ? (a) : (b))
-#define MAX(a,b)                (((a) > (b)) ? (a) : (b))
-#define MIN3(a,b,c)             (MIN(MIN((a), (b)), (c)))
-#define MAX3(a,b,c)             (MAX(MAX((a), (b)), (c)))
-#define SIGN(x)                 (((x) < 0) ? -1 : (((x) > 0) ? 1 : 0))
-#define ABS(x)                  (((x) < 0) ? -(x) : (x))
-#define SAME_SIGNS(a,b)         (((int32_t)((uint32_t)(a) ^ (uint32_t)(b))) >= 0)
-#define XOR(a,b)                (!(a) != !(b))
-#define MUL_PI(x)               (((x)*355L)/113)
-#define DIV_PI(x)               ((((x)*113L)/355)
+// intersection flags/status
+#define DONT_INTERSECT          0
+#define DO_INTERSECT            1
+#define OUTCODE_INSIDE          0
+#define OUTCODE_LEFT            BIT_0
+#define OUTCODE_RIGHT           BIT_1
+#define OUTCODE_TOP             BIT_2
+#define OUTCODE_BOTTOM          BIT_3
 
 // trigonometry, binary radians
 #define BRAD_SHIFT              14
@@ -57,15 +54,12 @@
 #define FIX_FRAC_MASK           ((1L<<FIX_SHIFT)-1)
 #define FIX_WHOLE_MASK          ~((1L<<FIX_SHIFT)-1)
 
-#define F(x)                    ((fixp)(x)*FIX_ONE)
+#define F(x)                    ((fixp)(x)<<FIX_SHIFT)
 
-// miscellaneous
-#define DONT_INTERSECT          0
-#define DO_INTERSECT            1
-#define OUTCODE_INSIDE          0
-#define OUTCODE_LEFT            1
-#define OUTCODE_RIGHT           2
-#define OUTCODE_TOP             4
-#define OUTCODE_BOTTOM          8
+#if ASPECT == 1
+#define A(x) (((x)*6)/5)
+#else
+#define A(x) (x)
+#endif
 
 #endif/* MATH_DEFS_H */

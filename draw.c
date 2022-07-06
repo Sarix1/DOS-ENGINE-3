@@ -51,7 +51,7 @@ void drawDebug()
     for (i = 0; i < NUM_DEBUG; i++)
     {
         if (debug[i][0] != '\0')
-            y += ((drawText(0, y, 0, 0, debug[i], AUTO, COLOR_DEBUG, TEXT_FX_NONE) + 1) << 3);
+            y += ((drawText(0, y, 0, 0, debug[i], COLOR_DEBUG) + 1) << 3);
     }
 }
 #endif

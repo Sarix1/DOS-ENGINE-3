@@ -1,70 +1,53 @@
 #include <stdio.h>
-//#include <i86.h> add delay to sleep while we are doing nothing
 #include "common.h"
+#include "main.h"
 #include "system.h"
 #include "timer.h"
-#include "maths2.h"
+#include "state.h"
+#include "message.h"
 
 #if DEBUG == 1
-void updateStats()
+void updateStats() // there should instead be a displaystats function, which just reads the stats from the timer
 {
+    int32_t fraxx = 1+ ((int64_t)(g_Timer.fps_avg & 0xFFFF)*1000)/0xFFFF;
     sprintf(debug[DEBUG_FPS],
-        "Time: %ld Minutes, %ld Seconds\nTicks: %ld, Frames: %ld\nFPS: %d, Avg. FPS: %d",
-        g_Timer.seconds/60, g_Timer.seconds%60, g_Timer.ticks, g_Timer.frames, g_Timer.fps, -1);
-}
+        "Time: %ld Minutes, %ld Seconds\nTicks: %ld, Frames: %ld\nFPS: %d, Avg. FPS: %ld.%ld",
+        g_Timer.seconds/60, g_Timer.seconds%60, g_Timer.ticks, g_Timer.frames, g_Timer.fps, g_Timer.fps_avg >> 16, fraxx);
+}                                                                                            
 #endif
 
 int main(void)
 {
-    time_t last_time   = 0; // Used for accumulating seconds & FPS calculation
-    time_t last_tick   = 0; // Tracks time elapsed since last tick started
-    time_t last_frame  = 0; // Tracks time elapsed since last draw started
-    time_t accumulator = 0; // Incremented by frame draw duration, decremented by ticks
-    int frame_count    = 0; // Counts frames in a second so far; used by debug
-
     init();
+    
+    pushState(STATE_GAME);
 
     while (g_System.running)
-    {  
-        if (last_tick + g_Timer.tick_time < g_Timer.time) // tick
+    {
+        int i;
+        g_Timer.last_cycle = g_Timer.time;
+        // process tick(s)
+        while (g_Timer.tick_accumulator >= g_Timer.tick_interval)
         {
-            do
-            {
-                last_tick = g_Timer.time;
-
-                input();  
-                physics();
-
-                accumulator -= g_Timer.tick_time;
-                g_Timer.ticks++;
-            }
-            while (accumulator >= g_Timer.tick_time);
+            g_Timer.last_tick = g_Timer.time; // not used
+            input();
+            updateStates();
+            g_Timer.ticks++;
+            g_Timer.tick_accumulator -= g_Timer.tick_interval;
         }
-
-        if (last_frame + g_Timer.frame_time < g_Timer.time) // frame
+        // render frame
+        if (g_Timer.last_frame + g_Timer.frame_interval < g_Timer.time)
         {
-            last_frame = g_Timer.time;
-
-            draw();
+            g_Timer.last_frame = g_Timer.time;
+            drawStates();
             render();
-
             g_Timer.frames++;
-            frame_count++;
-            accumulator += g_Timer.time - last_frame;
-
+            g_Timer.fps_count++;
             #if DEBUG == 1
             updateStats();
             #endif
         }
-
-        if (last_time + 1000 < g_Timer.time) // FPS calculation; optional for debugging
-        {
-            last_time += 1000;
-            g_Timer.seconds++;
-            g_Timer.fps_avg = toFixp(g_Timer.frames) / g_Timer.seconds;
-            g_Timer.fps = frame_count;
-            frame_count = 0;
-        }
+        g_Timer.tick_accumulator += g_Timer.time - g_Timer.last_cycle;
     }
 
     quit();

@@ -6,7 +6,7 @@
 #include "sys_typ.h"
 
 Input_t g_Input = {0};
-KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
+KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_Y, KEY_N};
 control_t player_control;
 
 // to-do: change keyevent to InputEvent so we can reuse it for mouse/joystick

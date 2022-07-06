@@ -4,6 +4,7 @@
 #include <string.h>
 #include "common.h"
 #include "video.h"
+#include "gfx_def.h"
 #include "gfx_typ.h"
 
 inline byte getPixel(int x, int y)

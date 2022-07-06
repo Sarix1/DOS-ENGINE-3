@@ -1,3 +1,4 @@
+/*
 #include <string.h>
 #include "common.h"
 #include "menu.h"
@@ -34,19 +35,17 @@ void initMenu(Menu_t* menu)
 
 void handleMenu(Menu_t* menu)
 {
-    /*
     if (KEY_WAS_HIT(KEYSTATE_DOWN) || KEY_WAS_HIT(KEY_PAD_2))
         menu->selection++;
     else if (KEY_WAS_HIT(KEY_UP) || KEY_WAS_HIT(KEY_PAD_8))
         menu->selection--;
     else if (KEY_WAS_HIT(KEY_ENTER) || KEY_WAS_HIT(KEY_PAD_ENTER))
-        EXEC(menu->Items[menu->selection].action);
+        SAFE_CALL(menu->Items[menu->selection].action);
 
     if (menu->selection >= menu->num_items)
         menu->selection = 0;
     else if (menu->selection < 0)
         menu->selection = menu->num_items-1;
-        */
 }
 
 void drawMenu(Menu_t* menu)
@@ -60,10 +59,10 @@ void drawMenu(Menu_t* menu)
     w               = menu->w;
     h               = menu->h;
 
-    if (menu->bg_color != BLANK)
+    if (menu->bg_color != COLOR_BLANK)
         drawRectFill_fast(x-menu->margin, y-menu->margin, w+margin2x, h+margin2x, menu->bg_color);
 
-    if (menu->border_color != BLANK)
+    if (menu->border_color != COLOR_BLANK)
         drawRectFrame_fast(x-menu->margin, y-menu->margin, w+margin2x, h+margin2x, menu->border_color);
 
     for (i = 0; i < menu->num_items; i++)
@@ -84,3 +83,5 @@ void drawMenu(Menu_t* menu)
         y += menu->leading;
     }
 }
+
+*/

@@ -1,8 +1,6 @@
 #ifndef VID_DEF_H
 #define VID_DEF_H
 
-#include "common.h"
-
 #define VGA             0xA0000000l
 #define VIDEO_INT       0x10
 
@@ -29,4 +27,6 @@
 #define Y_OFFSET(i) (i*SCREEN_WIDTH)
 #endif/* VID_DEF_H */
 
-#endif/* VIDEO_DEFS_H */
+#define CHARSET_ROM    0xF000FA6EL
+
+#endif/* VID_DEF_ */

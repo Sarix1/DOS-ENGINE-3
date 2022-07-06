@@ -17,6 +17,8 @@ typedef struct
     byte down;
     byte left;
     byte right;
+    byte UI_yes;
+    byte UI_no;
     // should be an array where index = id of action, key = keycode
 } KeyMap_t;
 
@@ -32,7 +34,6 @@ typedef struct
     bool repeat_keys : 1;
     bool text_input  : 1;
     bool text_enter  : 1;
-    bool init        : 1;
 } Input_t;
 
 #endif/* INP_TYP_H */

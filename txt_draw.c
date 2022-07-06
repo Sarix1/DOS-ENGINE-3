@@ -1,58 +1,40 @@
 #include <stdio.h>
 #include "common.h"
 #include "txt_draw.h"
+#include "txt_def.h"
+#include "vid_def.h"
 #include "font.h"
 #include "gfx.h"
 
-void drawChar8x8(int x, int y, const byte symbol, byte color, byte effect)
+static const byte far* charset_rom = (byte far*)CHARSET_ROM;
+
+static byte far* charset = charset_8x8;//(byte far*)CHARSET_ROM;
+
+void drawChar8x8(int x, int y, byte symbol, byte color)
 {
-    const byte bit1 = 1;
-    int row, col;
-    byte bits;
-    byte color_increment = (effect & TEXT_FX_GRAD) ? ((effect & TEXT_FX_FLAG) ? -1 : 1) : 0;
-
-    for (row = 0; row < 8; row++, y++)
+    int rows = 8;
+    byte far* char_offset = &charset[symbol<<3];
+    byte far* row_start = g_Video.surface + Y_OFFSET(y) + x;
+    
+    while (rows--)
     {
-        
-        bits = charset_8x8[symbol][row];
-        col = x;
-        
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixel(col, y, color);
+        byte row_pixels = *(char_offset++);
+        byte far* pix = row_start;
 
-        color += color_increment;
+        while (row_pixels)
+        {
+            if (row_pixels & 1)
+                *pix = color;
+
+            row_pixels >>= 1;
+            pix++;
+        }
+
+        row_start += SCREEN_WIDTH;
     }
 }
 
-void drawChar8x8_VGA(int x, int y, const byte symbol, const byte color)
-{
-    const byte bit1 = 1;
-    int row, col;
-    byte bits;
-
-    for (row = 0; row < 8; row++, y++, col = x)
-    {
-        bits = charset_8x8[symbol][row];
-        col = x;
-        
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color); col++; bits >>= 1;
-        if (bits & bit1) setPixVGA(col, y, color);
-    }
-}
-
-void drawCharSet(int x, int y, byte color, byte effect)
+void drawCharSet(int x, int y, byte color)
 {
     int16_t row, col;
     byte i;
@@ -61,121 +43,75 @@ void drawCharSet(int x, int y, byte color, byte effect)
     for (row = 0; row < 16; row++)
     {
         for (col = 0; col < 16; col++, i++)
-            drawChar8x8(x+(col%16)*8, y, i, color, effect);
+            drawChar8x8(x+(col%16)*8, y, i, color);
         y += 8;
     }
 }
 
-
-int drawText(int x, int y, int w, int h, const char* string, int len, byte color, byte effect)
+int drawText(int x, int y, const max_cols_, const max_rows_, char* string, byte color)
 {
-    int x_offset = x;
+    const x_start = x;
+    int rows, cols;
     int newlines = 0;
-    
-    if (w <= 0) w = SCREEN_WIDTH-x;
-    if (h <= 0) h = SCREEN_HEIGHT-y;
-    
-    w += x;
-    h += y;
-    
-    if (len > 0)
-    {
-        while (len-- != 0)
-        {
-            if (*string == '\n' || x_offset > w+x)
-            {
-                y += 8;
-                newlines++;
-                if (y >= h)
-                    break;
-                x_offset = x;
-            }
-            else if (*string == '\r')
-                x_offset = x;
-            else if (*string == '\t')
-                x_offset += 32 - (x_offset % 32);
-            else
-            {
-                if (*string != ' ')
-                    drawChar8x8(x_offset, y, (*string), color, effect);
-                x_offset += 8;
-            }
-            string++;
-        }
-    }
-    else
-    {
-        while (*string != '\0')
-        {
-            if (*string == '\n' || x_offset > w+x)
-            {
-                y += 8;
-                newlines++;
-                if (y >= h)
-                    break;
-                x_offset = x;
-            }
-            else if (*string == '\r')
-                x_offset = x;
-            else if (*string == '\t')
-                x_offset += 32 - (x_offset % 32);
-            else
-            {
-                if (*string != ' ')
-                    drawChar8x8(x_offset, y, (*string), color, effect);
-                x_offset += 8;
-            }
-            string++;
-        }
-    }
+    int col = 0;
+    char c;
 
+    if ((cols = (SCREEN_WIDTH /CHAR_SIZE) - (x>>CHAR_SHIFT)) <= 0)  return 0;
+    if ((rows = (SCREEN_HEIGHT/CHAR_SIZE) - (y>>CHAR_SHIFT)) <= 0)  return 0;
+    cols = (max_cols_ == 0) ? cols : MIN(max_cols_, cols);
+    rows = (max_rows_ == 0) ? rows : MIN(max_rows_, rows);
+    
+    while (c = *(string++))
+    {
+        switch (c)
+        {     
+        // CRLF
+        case '\n':
+            drawText_newline:
+            newlines++;
+            if (--rows == 0)
+                return newlines;
+            y += CHAR_SIZE;
+        case '\r':
+            col = 0;
+            x = x_start;
+            continue;
+            
+        // TAB
+        case '\t':
+            col = (col & ~TAB_MASK) + TAB_SIZE;
+            if (col >= cols)
+                goto drawText_newline;
+            x += (TAB_SIZE*CHAR_SIZE);
+            continue;
+        // 1 char
+        default:
+            drawChar8x8(x,y,c,color);
+        case ' ':
+            if (++col >= cols)
+                goto drawText_newline;
+            x += CHAR_SIZE;
+        }
+    }
     return newlines;
 }
 
-void drawText_fast(int x, int y, const char* string, int len, byte color, byte effect)
+void drawText_fast(int x, const y, char* str, int len, byte color)
 {
-    int x_offset = x;
-    
-    if (len > 0)
+    if (len == 0)
     {
-        while (len-- != 0)
+        while (*str)
         {
-            drawChar8x8(x_offset, y, (*string), color, effect);
-            x_offset += 8;
-            string++;
+            drawChar8x8(x, y, *(str++), color);
+            x += CHAR_SIZE;
         }
+        return;
     }
-    else
-    {
-        while (*string != '\0')
-        {
-            drawChar8x8(x_offset, y, (*string), color, effect);
-            x_offset += 8;
-            string++;
-        }
-    }
-}
 
-void drawText_VGA(int x, int y, const char* string, int len, byte color, byte effect)
-{
-    int x_offset = x;
-    
-    if (len > 0)
+    while (len--)
     {
-        while (len-- != 0)
-        {
-            drawChar8x8_VGA(x_offset, y, (*string), color);
-            x_offset += 8;
-            string++;
-        }
+        drawChar8x8(x, y, *(str++), color);
+        x += CHAR_SIZE;
     }
-    else
-    {
-        while (*string != '\0')
-        {
-            drawChar8x8_VGA(x_offset, y, (*string), color);
-            x_offset += 8;
-            string++;
-        }
-    }
+    return;
 }

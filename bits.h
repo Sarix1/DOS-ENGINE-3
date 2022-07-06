@@ -1,7 +1,11 @@
-#ifndef BIT_H
-#define BIT_H
+#ifndef BITS_H
+#define BITS_H
 
-// bit twiddling
+#define INT8_SIGN   0x80
+#define INT16_SIGN  0x8000
+#define INT32_SIGN  0x80000000
+#define INT64_SIGN  0x8000000000000000
+
 #define BIT_0   0x1
 #define BIT_1   0x2
 #define BIT_2   0x4
@@ -67,21 +71,4 @@
 #define BIT_62  0x4000000000000000
 #define BIT_63  0x8000000000000000
 
-#define SET_BITS_FROM(i)        (((i) == 8) ? 0xFFu : (1u << (i)) - 1)
-#define SET_BIT_RANGE(f,to)     ((SET_BITS_FROM(f)) & (~SET_BITS_FROM(to)))
-#define LOWEST_SET_BIT2(x)      ((x) & 0x1    ? 0 : 1)
-#define LOWEST_SET_BIT4(x)      ((x) & 0x3    ? LOWEST_SET_BIT2(x)  : 2  + LOWEST_SET_BIT2((x) >> 2))
-#define LOWEST_SET_BIT8(x)      ((x) & 0xF    ? LOWEST_SET_BIT4(x)  : 4  + LOWEST_SET_BIT4((x) >> 4))
-#define LOWEST_SET_BIT16(x)     ((x) & 0xFF   ? LOWEST_SET_BIT8(x)  : 8  + LOWEST_SET_BIT8((x) >> 8))
-#define LOWEST_SET_BIT32(x)     ((x) & 0xFFFF ? LOWEST_SET_BIT16(x) : 16 + LOWEST_SET_BIT16((x) >> 16))
-#define LOWEST_SET_BIT(x)       LOWEST_SET_BIT32(x)
-
-#define INT8_SIGN       0x80
-#define INT16_SIGN      0x8000
-#define INT32_SIGN      0x80000000
-#define INT64_SIGN      0x8000000000000000
-
-#define LOW_BYTE(n)     (n & 0x00ff)
-#define HIGH_BYTE(n)    ((n>>8) & 0x00ff)
-
-#endif/* BIT_H */
+#endif/* BITS_H */

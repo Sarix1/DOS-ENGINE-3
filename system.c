@@ -1,58 +1,45 @@
-#include <stdio.h>
 #include "common.h"
-#include "sys_typ.h"
+#include "system.h"
+#include "init.h"
+#include "message.h"
 
 System_t g_System = {0};
 
-const char far* system_str[NUM_SYSTEMS] =
+const char far* subsys_strings[NUM_SUBSYSTEMS] =
 {
-    "Video",
     "Input",
     "Timer",
-    //"Audio",
-    "Game",
+    "Video",
+    "Audio",
+    "State",
 };
 
-int initVideo();
-int initInput();
-int initTimer();
-//int initAudio();
-int initGame();
-
-int quitVideo();
-int quitInput();
-int quitTimer();
-//int quitAudio();
-int quitGame();
-
-int confirm();
-
-static i_fnp SystemFuncs[NUM_SYSTEMS][2] =
+static i_fnp subsys_functions[NUM_SUBSYSTEMS][2] =
 {
-    {initVideo, quitVideo},
     {initInput, quitInput},
     {initTimer, quitTimer},
-    //{initAudio, quitAudio},
-    {initGame,  quitGame },
+    {initVideo, quitVideo},
+    {initAudio, quitAudio},
+    {initStateMgr, quitStateMgr}
 };
 
 static int initSubSystem(int sus)
 {
     int status;
 
-    echoMsg("Init ", system_str[sus], "...");
-    if (isInit(sus) == INITIALIZED)
+    //message("Init %s...", subsys_strings[sus]);
+    if (isSubSysInit(sus))
     {
-        echoMsg("already init!\n","","");
+        message("already init!\n");
     
         return SUCCESS;
     }
 
-    status = SystemFuncs[sus][0]();
+    status = subsys_functions[sus][0]();
     if (status == SUCCESS)
     {
-        g_System.init[sus] = INITIALIZED;
-        echoMsg("OK\n","","");
+        g_System.init |= BIT(sus);
+        //message("OK\n");
 
         return SUCCESS;
     }
@@ -66,14 +53,14 @@ static int quitSubSystem(int sus)
 {
     int status;
 
-    echoMsg("Quit ", system_str[sus], "...");
-    if (isInit(sus) == UNINITIALIZED)    
+    message("Quit %s\n", subsys_strings[sus]);
+    if (!isSubSysInit(sus))    
         return SUCCESS;
 
-    status = SystemFuncs[sus][1]();
+    status = subsys_functions[sus][1]();
     if (status == SUCCESS)
     {
-        g_System.init[sus] = UNINITIALIZED;
+        g_System.init &= ~BIT(sus);
         statusMsg(SUCCESS);
 
         return SUCCESS;
@@ -86,32 +73,55 @@ static int quitSubSystem(int sus)
 
 int init()
 {
-    int i, success = SUCCESS;
-    g_System.running = 1;
-    for (i = 0; i < NUM_SYSTEMS; i++)
+    int i;
+    int status = SUCCESS;
+
+    //setvbuf(stdout, stream_buffer, _IOFBF, STREAM_BUFFER_SIZE);
+
+    for (i = 0; i < NUM_SUBSYSTEMS; i++)
     {
         if (initSubSystem(i) != SUCCESS)
         {
-            success = ERROR;
-            echoMsg("Could not init ", system_str[i], " subsystem\n");
-            if (confirm() == NO)
+            status = ERROR;
+            message("Could not init %s! ", subsys_strings[i]);
+            /*
+            if (prompt("Continue?\n") == NO)
             {
                 quit();
                 return ERROR;
             }
+            */
         }
     }
 
-    return success;
+    g_System.running = 1;
+
+    return status;
 }
 
 void quit()
 {
     int i;
     g_System.running = 0;
-    for (i=NUM_SYSTEMS-1; i>=0; i--)
+    for (i = NUM_SUBSYSTEMS-1; i >= 0; i--)
     {
         if (quitSubSystem(i) != SUCCESS)
-            echoMsg("Could not quit ", system_str[i], " subsystem\n");
+            message("Could not quit %s\n", subsys_strings[i]);
     }
 }
+
+/*
+int sum(int num_args, ...) {
+   int val = 0;
+   va_list ap;
+   int i;
+
+   va_start(ap, num_args);
+   for(i = 0; i < num_args; i++) {
+      val += va_arg(ap, int);
+   }
+   va_end(ap);
+ 
+   return val;
+}
+*/

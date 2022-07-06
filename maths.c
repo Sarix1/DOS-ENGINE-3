@@ -9,7 +9,8 @@
 // vec3 variants of all vec2 functions
 // int64_sqrt
 
-int32_t int32_sqrt(int32_t x)
+// int32 to int32
+int32_t sqrt(int32_t x)
 {
     if (x == 0)
         return 0;
@@ -30,11 +31,12 @@ int32_t int32_sqrt(int32_t x)
             }
             bit >>= 2; //bit/4
         }
-        return (int32_t)root;
+        return root;
     }
 }
 
-fix16_16 int32toFix16_16_sqrt(int32_t x)
+// int32 to fixp16.16
+fixp sqrtI2F(int32_t x)
 {
     if (x == 0)
         return 0;
@@ -58,11 +60,12 @@ fix16_16 int32toFix16_16_sqrt(int32_t x)
         if (rem > root)
             root++;
 
-        return (fix16_16)root;
+        return root;
     }
 }
 
-fix16_16 fix16_16_sqrt(fix16_16 x)
+// fixp16.16 to fixp16.16
+fixp sqrtF2F(fixp x)
 {
     if (x == 0)
         return 0;

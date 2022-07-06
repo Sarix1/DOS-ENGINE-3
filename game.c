@@ -2,9 +2,13 @@
 #include "game.h"
 #include "malloc_.h"
 #include "maths2.h"
+#include "gfx_def.h"
 #include <string.h>
 
 GameData_t g_Game = {0};
+
+void physics();
+void draw();
 
 int initGame()
 {
@@ -26,6 +30,16 @@ int quitGame()
     free(g_Game.ObjectsById);
 
     return SUCCESS;
+}
+
+void updateGame()
+{
+    physics();
+}
+
+void drawGame()
+{
+    draw();
 }
 
 static id_t getNewId()
