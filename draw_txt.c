@@ -141,7 +141,7 @@ void drawLog(int x, int y, Log_t* log)
         num_lines = log->line_count;
         line = log->line_read;
     }
-    
+
     // draw lines
     if (log->line_count == 0)
         return;
@@ -149,7 +149,9 @@ void drawLog(int x, int y, Log_t* log)
     x = 0;
     y += (log->vis_lines - num_lines) * CHAR_HEIGHT;
 
-    do {
+    while(num_lines--)
+    {
+        //fprintf(stderr, "draw line %d\n", line);
         drawText_fast(x, y,
             log->Lines[line].str,
             log->Lines[line].len,
@@ -157,7 +159,7 @@ void drawLog(int x, int y, Log_t* log)
 
         incAndWrap(line, log->max_lines);
         y += CHAR_HEIGHT;
-    } while (rDecAndWrap(line, log->max_lines) != log->line_write);
+    }
 }
 
 void drawInput(int x, int y, int max_cols, InputField_t* input, byte color)

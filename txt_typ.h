@@ -31,12 +31,12 @@ typedef struct
     RingBuffer_t Buffer;
     String_t* Lines;
 
-    byte line_count;
-    byte line_read;
-    byte line_write;
-    byte max_cols;
-    byte max_lines; // size of the line buffer
-    byte vis_lines; // max lines visible at once
+    int line_count;
+    int line_read;
+    int line_write;
+    int max_cols;
+    int max_lines; // size of the line buffer
+    int vis_lines; // max lines visible at once
     byte bg_color;
 } Log_t;
 
