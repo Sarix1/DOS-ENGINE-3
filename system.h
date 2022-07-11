@@ -8,7 +8,7 @@ extern System_t g_System;
 
 inline int isSubSysInit(int sus)
 {
-    return !!(g_System.init & BIT(sus));
+    return !!(g_System.init_flags & BIT(sus));
 }
 
 #endif/* SYSTEM_H */

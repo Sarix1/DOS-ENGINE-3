@@ -19,4 +19,22 @@
 #define COLOR_YELLOW    14
 #define COLOR_WHITE     15
 
+#define COLOR_INPUT_TEXT    COLOR_WHITE
+#define COLOR_INPUT_BG      COLOR_L_BLUE
+
+#define COLOR_LOG_TEXT      COLOR_L_BLUE
+#define COLOR_LOG_BG        COLOR_BLUE
+
+#define COLOR_UI_TEXT       COLOR_L_BLUE
+#define COLOR_UI_BG         COLOR_BLUE
+
+#define COLOR_ERROR_TEXT    COLOR_L_RED
+#define COLOR_SYSTEM_TEXT   COLOR_L_GREY
+#define COLOR_DEBUG_TEXT    COLOR_L_BLUE
+#define COLOR_DEBUG_LINE    COLOR_BLUE
+
+#define COLOR_SHIP          COLOR_L_GREEN
+#define COLOR_ASTEROID      COLOR_D_GREY
+#define COLOR_BG            COLOR_BLACK
+
 #endif/* COLORS_H */

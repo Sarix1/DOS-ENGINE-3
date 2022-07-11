@@ -6,13 +6,14 @@
 
 typedef struct
 {
-    Palette_t   palette;
     byte*       screen;
     byte far*   off_screen;
     byte far*   surface;
+    Palette_t*  palette;
     int         offset_x;
     int         offset_y;
-    time_t      frame;
+    byte        bg_color;
+    byte        text_color;
 } Video_t;
 
 #endif/* VID_TYP_H */

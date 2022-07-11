@@ -8,10 +8,10 @@
 
 extern GameData_t g_Game;
 
-id_t createObject(int16_t x, int16_t y, brad angle, brad angvel,
+id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
                   fixp radius, fixp scale, Poly_t* poly, byte color);
 void deleteObject(id_t id);
 void deleteLastObject();
-id_t spawnShip(int16_t x, int16_t y, brad angle);
+id_t spawnShip(Vec2 pos, brad angle);
 
 #endif/* GAME_H */

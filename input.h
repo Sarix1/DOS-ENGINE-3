@@ -4,10 +4,10 @@
 #include "common.h"
 #include "inp_typ.h"
 #include "inp_def.h"
-#include "keys.h"
-#include "controls.h"
 
 extern Input_t g_Input;
+
+int handleGlobalKeys(InputEvent_t event);
 
 inline byte isKeyDown(byte k)
 {

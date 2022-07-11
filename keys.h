@@ -1,6 +1,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
+#define KEY_TILDE           0xC0
+
 #define KEY_0               0x0B
 #define KEY_1               0x02
 #define KEY_2               0x03

@@ -18,7 +18,6 @@ static void setVideo(byte mode)
 
 int initVideo()
 {
-    g_Video.frame       = 0;
     g_Video.screen      = (byte*)VGA;
     g_Video.off_screen   = (byte far*)farmalloc(SCREEN_SIZE);
 
@@ -56,5 +55,4 @@ void render()
 	while (!(inportb(INPUT_STATUS) & VRETRACE))
         ;
 	memcpy(g_Video.screen, g_Video.off_screen, SCREEN_SIZE);
-    g_Video.frame++;
 }

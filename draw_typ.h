@@ -1,5 +1,5 @@
-#ifndef GFX_DEFS_H
-#define GFX_DEFS_H
+#ifndef DRAW_DEFS_H
+#define DRAW_DEFS_H
 
 #include "types.h"
 #include "math_typ.h"
@@ -28,4 +28,4 @@ typedef struct
     fix16_16 scale_y;
 } Visible_t;
 
-#endif/* GFX_DEFS_H */
+#endif/* DRAW_DEFS_H */

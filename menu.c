@@ -2,10 +2,10 @@
 #include <string.h>
 #include "common.h"
 #include "menu.h"
-#include "txt_inp.h"
-#include "txt_draw.h"
+#include "inp_txt.h"
+#include "draw_txt.h"
 //#include "input.h"
-#include "gfx.h"
+#include "draw.h"
 
 void initMenu(Menu_t* menu)
 {

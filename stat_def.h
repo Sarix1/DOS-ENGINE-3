@@ -12,7 +12,7 @@
 
 enum STATES
 {
-    //STATE_TITLE,
+    STATE_CONSOLE,
     STATE_GAME,
     NUM_STATES
 };

@@ -1,11 +1,11 @@
-#ifndef GFX_H
-#define GFX_H
+#ifndef DRAW_H
+#define DRAW_H
 
 #include <string.h>
 #include "common.h"
 #include "video.h"
-#include "gfx_def.h"
-#include "gfx_typ.h"
+#include "draw_def.h"
+#include "draw_typ.h"
 
 inline byte getPixel(int x, int y)
 {
@@ -24,12 +24,12 @@ inline void setPixVGA(int x, int y, byte c)
 
 inline void drawFill(byte color)
 {
-    memset(g_Video.surface, color, SCREEN_SIZE);
+    _fmemset(g_Video.surface, color, SCREEN_SIZE);
 }
 
 inline void drawLineHorz_fast(int x, int y, int len, byte color)
 {
-    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
+    _fmemset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineHorz2_fast(int x, int y, int len, byte color)
@@ -39,7 +39,7 @@ inline void drawLineHorz2_fast(int x, int y, int len, byte color)
         x += len;
         len = -len;
     }
-    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
+    _fmemset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineVert_fast(int x, int y, int len, byte color)
@@ -73,26 +73,30 @@ inline void drawPixel(int x, int y, byte color)
         setPixel(x, y, color);
 }
 
-//void drawPixel          (int x, int y, byte color);
+void drawPixel          (int x, int y, byte color);
 void drawPixels_fast    (byte* pixels, int x, int y, int w, int h);
 void drawPixels         (byte* pixels, int x, int y, int w, int h);
+
 void drawLineHorz       (int x, int y, int len, byte color);
 void drawLineVert       (int x, int y, int len, byte color);
 void drawLineHorz2      (int x, int y, int len, byte color);
 void drawLineVert2      (int x, int y, int len, byte color);
 void drawLineSlope      (int ax, int ay, int bx, int by, byte color);
+
 void drawLine           (Vec2 p0, Vec2 p1, byte color);
 void drawLineFixp       (Vec2 p0, Vec2 p1, byte color);
 void drawLine_fast      (Vec2 p0, Vec2 p1, byte color);
 void drawLine_fix_fast  (Vec2 p0, Vec2 p1, byte color);
+
 void drawRectFill       (int x, int y, int w, int h, byte color);
 void drawRectFill_fast  (int x, int y, int w, int h, byte color);
 void drawRectFrame      (int x, int y, int w, int h, byte color);
 void drawRectFrame_fast (int x, int y, int w, int h, byte color);
 void drawCircleFill     (int x, int y, int diameter, byte color);
 void drawCircleFrame    (int x, int y, int diameter, byte color);
-//void drawVisible(Visible_t* vis, int x, int y)
+
 void drawShape          (Vec2 pos, Vec2* points, int num_points, byte color);
 void drawFixpShape      (Vec2 pos, Vec2* points, int num_points, byte color);
-void drawShapeScreen    (Vec2 pos, Vec2* points, int num_points, byte color);
-#endif/* GFX_H */
+void drawShapeAspect    (Vec2 pos, Vec2* points, int num_points, byte color);
+
+#endif/* DRAW_H */

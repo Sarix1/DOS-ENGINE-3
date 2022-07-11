@@ -10,5 +10,7 @@ int pushState(id_t new_);
 int popState();
 void updateStates();
 void drawStates();
+void setStateFlags(id_t state, flags_t flags);
+void clearStateFlags(id_t state, flags_t flags);
 
 #endif/* STATE_H */

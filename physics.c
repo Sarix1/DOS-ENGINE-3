@@ -1,13 +1,10 @@
+#include "common.h"
 #include "physics.h"
-#include "maths.h"
 #include "controls.h"
+#include "maths.h"
 #include "game.h"
 
 extern control_t player_control;
-
-#define PHYS_MAX_SPEED  (FIX_ONE*2)
-#define PHYS_ACCELERATE (FIX_ONE/8)
-#define PHYS_TURN_RATE  DEG_5
 
 void controlObject(Object_t* obj)
 {
@@ -32,8 +29,8 @@ void controlObject(Object_t* obj)
             obj->vel = vec2add(obj->vel, vec2scale(obj->dir, -PHYS_ACCELERATE));
             break;
         default:
-            obj->vel.x = fixpMul(obj->vel.x, (FIX_ONE-1000));
-            obj->vel.y = fixpMul(obj->vel.y, (FIX_ONE-1000));
+            obj->vel.x = fixpMul(obj->vel.x, PHYS_DECELERATE);
+            obj->vel.y = fixpMul(obj->vel.y, PHYS_DECELERATE);
     }
 }
 
@@ -43,12 +40,28 @@ void moveObject(Object_t* obj)
     obj->pos.y += obj->vel.y;
     obj->angle += obj->angvel;
     obj->dir = vec2unit(obj->angle);
+
+    if (obj->pos.x-obj->radius > F(SCREEN_WIDTH))
+        obj->pos.x = -obj->radius;
+    else if (obj->pos.x+obj->radius < 0)
+       obj->pos.x = F(SCREEN_WIDTH)+obj->radius;
+
+    if (obj->pos.y-obj->radius > F(A(SCREEN_HEIGHT)))
+        obj->pos.y = -obj->radius;
+    else if (obj->pos.y+obj->radius < 0)
+       obj->pos.y = F(A(SCREEN_HEIGHT))+obj->radius;
+}
+
+void moveAllObjects()
+{
+    int i;
+    for (i = 0; i < g_Game.object_count; i++)
+        moveObject(&g_Game.Objects[i]);
 }
 
 void physics()
 {
-    PLAYER_OBJ->control = player_control;
-    // ^ should be in a "logic" loop that  comes before physics, and includes AI, game logic, etc.
+    PLAYER_OBJ->control = player_control; // ^ should be in a "logic" loop that  comes before physics, and includes AI, game logic, etc.
     controlObject(PLAYER_OBJ);
-    moveObject(PLAYER_OBJ);
+    moveAllObjects();
 }

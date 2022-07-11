@@ -1,9 +1,11 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "game_typ.h"
+#define PHYS_MAX_SPEED  (FIX_ONE*2)
+#define PHYS_ACCELERATE (FIX_ONE/4)
+#define PHYS_DECELERATE (FIX_ONE-(FIX_ONE/20))
+#define PHYS_TURN_RATE  BRAD_1_32ND_PI
 
-void controlObject(Object_t* obj);
-void moveObject(Object_t* obj);
+void physics();
 
 #endif/* PHYSICS_H */

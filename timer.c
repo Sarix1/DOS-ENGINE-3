@@ -95,7 +95,7 @@ int initTimer()
     delay(CLOCK_RATE);
     t = getTime()-t;
     sprintf(str, "%ld", t);
-    message("\nTimer runs at: ", str, " Hz,\nExpected value: CLOCK_RATE Hz\n");
+    print(0, "\nTimer runs at: ", str, " Hz,\nExpected value: CLOCK_RATE Hz\n");
     
     if (t == 0)
         return ERROR_TIMER_FROZEN;

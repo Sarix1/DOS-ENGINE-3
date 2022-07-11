@@ -5,7 +5,8 @@
 
 typedef struct
 {
-    flags_t init;
+    flags_t init_flags;
+    flags_t print_flags;
     bool running : 1;
 } System_t;
 

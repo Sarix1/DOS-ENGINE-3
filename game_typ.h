@@ -1,9 +1,9 @@
-#ifndef GAME_STRUCTS_H
-#define GAME_STRUCTS_H
+#ifndef GAME_TYP_H
+#define GAME_TYP_H
 
 #include "common.h"
 #include "math_def.h"
-#include "gfx_typ.h"
+#include "draw_typ.h"
 
 typedef struct
 {
@@ -36,4 +36,4 @@ typedef struct
     id_t player_id;
 } GameData_t;
 
-#endif/* GAME_STRUCTS_H */
+#endif/* GAME_TYP_H */

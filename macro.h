@@ -18,6 +18,18 @@
 #define _NONE EMPTY()
 #define FORMAT_TOKEN(pre,x,suf) CAT3(CAT(pre, _), x, CAT(_, suf))
 
+#define wrap(x,max)         if ((x)<0||(x)>=(max))  (x)=0
+#define wrapEnd(x,max)      if ((x)>=(max))         (x)=0
+#define wrapStart(x,max)    if ((x)<0)              (x)=(max)-1   
+#define incAndWrap(x,max)   if (++(x)>=(max))       (x)=0
+#define decAndWrap(x,max)   if (--(x)<0)            (x)=(max)-1
+
+#define rWrap(x,max)        ((x)>=(max)||(x)<0) ? 0:(x)
+#define rWrapEnd(x,max)     ((x)>=(max)) ? 0:(x)
+#define rWrapStart(x,max)   ((x)<0) ? (max)-1:(x)
+#define rIncAndWrap(x,max)  ((x)+1>=(max)) ? 0:(x)+1
+#define rDecAndWrap(x,max)  ((x)-1<0) ? (max)-1:(x)-1
+
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #define MAX(a,b)            (((a) > (b)) ? (a) : (b))
 #define MIN3(a,b,c)         (MIN(MIN((a), (b)), (c)))
@@ -42,7 +54,7 @@
 #define LOWEST_SET_BIT32(x) ((x) & 0xFFFF ? LOWEST_SET_BIT16(x) : 16 + LOWEST_SET_BIT16((x) >> 16))
 #define LOWEST_SET_BIT(x)   LOWEST_SET_BIT32(x)
 
-#define ASSERT(exp)     if (!exp) fprintf(stderr, "Error: " #exp " evaluated as false\n")
+#define ASSERT(exp)     if (!(exp)) fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n")
 #define SAFE_CALL(f)    if (f != NULL) f()
 
 #endif/* MACRO_H */

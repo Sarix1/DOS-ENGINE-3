@@ -15,12 +15,33 @@
 // trigonometry, binary radians
 #define BRAD_SHIFT              14
 #define BRAD_2PI                (1<<BRAD_SHIFT)
-#define BRAD_PI                 ((1<<BRAD_SHIFT)/2)
-#define BRAD_HPI                ((1<<BRAD_SHIFT)/4)
-#define BRAD_QPI                ((1<<BRAD_SHIFT)/8)
+#define BRAD_PI                 (1<<(BRAD_SHIFT-1))
+#define BRAD_HPI                (1<<(BRAD_SHIFT-2))
+#define BRAD_QPI                (1<<(BRAD_SHIFT-3))
+#define BRAD_1_8TH_PI           (1<<(BRAD_SHIFT-4))
+#define BRAD_1_16TH_PI          (1<<(BRAD_SHIFT-5))
+#define BRAD_1_32ND_PI          (1<<(BRAD_SHIFT-6))
+#define BRAD_1_64TH_PI          (1<<(BRAD_SHIFT-7))
+#define BRAD_1_128TH_PI         (1<<(BRAD_SHIFT-8))
+#define BRAD_1_256TH_PI         (1<<(BRAD_SHIFT-9))
+#define BRAD_1_512TH_PI         (1<<(BRAD_SHIFT-10))
+#define BRAD_1_1024TH_PI        (1<<(BRAD_SHIFT-11))
+#define BRAD_1_2048TH_PI        (1<<(BRAD_SHIFT-12))
+#define BRAD_1_4096TH_PI        (1<<(BRAD_SHIFT-13))
+#define BRAD_1_8192ND_PI        (1<<(BRAD_SHIFT-14))
 
+#define DEG_01                  ((1<<BRAD_SHIFT)/3600)
+#define DEG_025                 (1+(1<<BRAD_SHIFT)/1440)
+#define DEG_05                  ((1<<BRAD_SHIFT)/720)
 #define DEG_1                   ((1<<BRAD_SHIFT)/360)
+#define DEG_2                   ((1<<BRAD_SHIFT)/180)
+#define DEG_3                   ((1<<BRAD_SHIFT)/120)
+#define DEG_4                   ((1<<BRAD_SHIFT)/90)
 #define DEG_5                   ((1<<BRAD_SHIFT)/72)
+#define DEG_6                   ((1<<BRAD_SHIFT)/60)
+#define DEG_7                   ((1<<BRAD_SHIFT)/60 + (1<<BRAD_SHIFT)/360)
+#define DEG_8                   ((1<<BRAD_SHIFT)/45)
+#define DEG_9                   ((1<<BRAD_SHIFT)/40)
 #define DEG_10                  ((1<<BRAD_SHIFT)/36)
 #define DEG_15                  ((1<<BRAD_SHIFT)/24)
 #define DEG_45                  ((1<<BRAD_SHIFT)/8)
@@ -58,8 +79,10 @@
 
 #if ASPECT == 1
 #define A(x) (((x)*6)/5)
+#define a(x) (((x)*5)/6)
 #else
 #define A(x) (x)
+#define a(x) (x)
 #endif
 
 #endif/* MATH_DEFS_H */

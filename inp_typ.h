@@ -2,14 +2,14 @@
 #define INP_TYP_H
 
 #include "inp_def.h"
-#include "txt_inp.h"
+#include "txt_typ.h"
 
 typedef struct
 {
     byte keycode;
     byte type;
     time_t time;
-} KeyEvent_t;
+} InputEvent_t;
 
 typedef struct
 {
@@ -24,16 +24,16 @@ typedef struct
 
 typedef struct
 {
-    KeyEvent_t queue[KB_QUEUE_LENGTH];
-    byte keystates[KB_ARRAY_SIZE]; // TO-DO: split into multiple arrays
-    KeyMap_t* keymap;
-    TextField_t* text_field;
-    byte queue_head;
-    byte queue_tail;
-    bool caps_lock   : 1;
-    bool repeat_keys : 1;
-    bool text_input  : 1;
-    bool text_enter  : 1;
+    flags_t       flags;
+
+    KeyMap_t*     keymap;
+    InputEvent_t  queue[KB_QUEUE_LENGTH];
+    byte          keystates[KB_ARRAY_SIZE]; // TO-DO: split into multiple arrays
+    byte          queue_head;
+    byte          queue_tail;
+
+    InputField_t* input_field;
+    fnp_input     input_callback;
 } Input_t;
 
 #endif/* INP_TYP_H */

@@ -4,17 +4,21 @@
 #include "input.h"
 #include "timer.h"
 #include "sys_typ.h"
+#include "inp_txt.h"
 
 Input_t g_Input = {0};
 KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_Y, KEY_N};
 control_t player_control;
 
 // to-do: change keyevent to InputEvent so we can reuse it for mouse/joystick
-static int gameControl(KeyEvent_t event)
+int handleGameControl(InputEvent_t event)
 {
-    // later, commands will be added as an abstraction layer
-    // keybinding-to-command-id indexes a command table
-    // key events will generate command events, to control certain object id
+    // later, CONTROL events will be added as an abstraction layer
+    // keybinding-to-controlevent-id indexes a CONTROL event table
+    // key events will generate CONTROL events, to control certain object id
+    // during one tick, all input events will generate ONE command event
+    // which has a bunch of bit flags enabled for hit/released keys
+    // if no input affects controls, then no control event is emitted
     if (event.type == KEYSTATE_HIT)
     {
         if (event.keycode == g_Input.keymap->up)
@@ -49,18 +53,33 @@ static void handleInputEvents() // keymap should be an array of commands
 {
     while (g_Input.queue_head != g_Input.queue_tail) 
     {
-        KeyEvent_t event = g_Input.queue[g_Input.queue_head];
+        InputEvent_t event = g_Input.queue[g_Input.queue_head];
         g_Input.queue_head++;
 
-        if (g_Input.text_input && textInput(g_Input.text_field, event.keycode) == HANDLED)
+        /* chain of responsibility */
+
+        // handle global keys here (esc, F10, etc.)
+        // first priority over everything, allows exiting text input mode (or any other mode)
+        if ((g_Input.flags & INPUT_FLAG_GLOBAL)
+            && handleGlobalKeys(event))
             continue;
 
-        if (gameControl(event) == HANDLED)
+        if ((g_Input.flags & INPUT_FLAG_TEXT)
+            && handleTextInput(event) == HANDLED)
+            continue;
+
+        // handle UI keys here (menu movement, selection, etc. also in-game inventory and such)
+        //if ((g_Input.flags & INPUT_FLAG_UI)
+        //    && handleUIControl(event))
+        //    continue;
+
+        if ((g_Input.flags & INPUT_FLAG_GAME)
+            && handleGameControl(event) == HANDLED)
             continue;
     }
 }
 
-static void pushKeyEvent(KeyEvent_t event)
+static void pushKeyEvent(InputEvent_t event)
 {
     if ((byte)(g_Input.queue_tail+1) != g_Input.queue_head)
         g_Input.queue[g_Input.queue_tail++] = event;
@@ -68,7 +87,7 @@ static void pushKeyEvent(KeyEvent_t event)
 
 static void handleScanCode(byte scan)
 {
-    KeyEvent_t event;
+    InputEvent_t event;
     static byte status = 0;
 
     if (scan == KEY_SPECIAL)
@@ -135,6 +154,7 @@ int initInput()
 {
     initKeyHandler();
     g_Input.keymap = &KeyMap_Basic;
+    g_Input.flags |= INPUT_FLAG_GLOBAL;
 
     return SUCCESS;
 }

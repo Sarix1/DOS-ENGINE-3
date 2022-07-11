@@ -1,9 +1,41 @@
 #ifndef MATHS2_H
 #define MATHS2_H
 
+// inline functions
+
 #include "common.h"
 #include "math_def.h"
 #include "math_typ.h"
+
+inline Vec2 vec2(fixp x, fixp y)
+{
+    Vec2 v;
+    v.y = x;
+    v.y = y;
+
+    return v;
+}
+
+inline Vec2 vec2i(int x, int y)
+{
+    Vec2 v;
+    v.x = ((fixp)x)<<FIX_SHIFT;
+    v.y = ((fixp)y)<<FIX_SHIFT;
+
+    return v;
+}
+
+// for printing out fractional part of fixp value
+inline int fixpFracToDec(fixp x)
+{
+    return (int)(((int64_t)(x & FIX_FRAC_MASK)*1000L)/FIX_ONE);
+}
+
+// for printing out whole part of fixp value
+inline int fixpWholeToDec(fixp x)
+{
+    return (int)(x >> FIX_SHIFT);
+}
 
 inline int64_t square(int32_t x)
 {
@@ -57,8 +89,6 @@ inline fixp fixpSinAcos_slow(fixp x)
 {
     return fixpSqrt(FIX_ONE-fixpSquare(x));
 }
-
-
 
 inline Vec2 vec2add(Vec2 a, Vec2 b)
 {
@@ -200,7 +230,7 @@ inline Vec2 vec2unit(brad angle)
     return v;
 }
 
-inline Vec2 vec2(brad angle, fixp length)
+inline Vec2 vec2a(brad angle, fixp length)
 {
     Vec2 v;
     v.x = ((int64_t)fixpCos(angle) * length) >> FIX_SHIFT;
@@ -209,12 +239,11 @@ inline Vec2 vec2(brad angle, fixp length)
     return v;
 }
 
-/*
 inline brad vec2angle(Vec2 v)
 {
-    return fixpAtan2(v.y, v.x);
+    return 0;
+    //return fixpAtan2(v.y, v.x);
 }
-*/
 
 inline int64_t vec2square(Vec2 v)
 {
