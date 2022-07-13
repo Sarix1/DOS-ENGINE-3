@@ -92,16 +92,12 @@ static int quitSubSystem(int sus)
     return status;
 }
 
-int initConsoleLog();
-
 int init()
 {
     int i;
     int status = SUCCESS;
 
     setPrintFlags(PRINT_FLAG_STDERR|PRINT_FLAG_CONSOLE);
-
-    initConsoleLog();
 
     status |= !!initSubSystem(SUBSYS_VIDEO);
     status |= !!initSubSystem(SUBSYS_INPUT);

@@ -3,43 +3,41 @@
 
 typedef struct
 {
-    char* buffer;
+    byte* buffer;
     int capacity;
     int length;
     int cursor;
     int start;
-} InputField_t;
+} TextInput_t;
 
 typedef struct
 {
-    char* str;
-    int len;
+    byte* start;
+    byte* end;
     byte color;
-} String_t;
+} Line_t;
 
 typedef struct
 {
-    char* str;
-    int size;
-    int count;
-    int read;
-    int write;
-} RingBuffer_t;
+    byte* start;
+    byte* end;
+    byte* read;
+    byte* write;
+} RingBuf_t;
 
 typedef struct
 {
-    RingBuffer_t Buffer;
-    String_t* Lines;
-
-    int line_count;
-    int line_read;
-    int line_write;
-    int max_cols;
-    int max_lines; // size of the line buffer
-    int vis_lines; // max lines visible at once
+    RingBuf_t Buffer;
+    Line_t* L_start;
+    Line_t* L_end;
+    Line_t* L_write;
+    Line_t* L_read;
+    int max_cols;   // max columns per line
+    int max_lines;  // size of the line buffer
+    int vis_lines;  // max lines visible at once
     byte bg_color;
 } Log_t;
 
-typedef void (*fnp_input)(InputField_t* input);
+typedef void (*fnp_input)(TextInput_t* input);
 
 #endif/* LOG_TYP_H */

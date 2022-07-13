@@ -25,6 +25,8 @@ extern const char far* error_strings[NUM_ERRORS];
 
 #define SUCCESS         0
 #define ERROR           1
+
+#define BUFFER_OK       0
 #define BUFFER_FULL     1
 
 #define YES             1

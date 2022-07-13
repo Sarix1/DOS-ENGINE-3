@@ -7,16 +7,16 @@
 #include "command.h"
 
 #include "txt_def.h"
-#include "inp_txt.h"
+#include "txt_inp.h"
 #include "input.h"
 #include "state.h"
 #include "print.h"
 
-static char far  console_input_buffer[CONSOLE_INPUT_SIZE]  = {0};
-static char far    console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
-static String_t far console_log_lines[CONSOLE_MAX_LINES]   = {0};
+static char far console_input_buffer[CONSOLE_INPUT_SIZE] = {0};
+static char far console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
+static Line_t far console_log_lines[CONSOLE_MAX_LINES] = {0};
 
-static InputField_t ConsoleInput =
+static TextInput_t ConsoleInput =
 {
     console_input_buffer,
     CONSOLE_INPUT_SIZE,
@@ -27,31 +27,19 @@ Log_t g_ConsoleLog =
 {
     {
         console_log_buffer,
-        CONSOLE_BUFFER_SIZE,
-        0, 0, 0
+        console_log_buffer+CONSOLE_BUFFER_SIZE,
+        console_log_buffer,
+        console_log_buffer
     },
     console_log_lines,
-    0, 0, 0,
+    console_log_lines+CONSOLE_MAX_LINES,
+    console_log_lines,
+    console_log_lines,
     MAX_SCREEN_COLS,
-    15,//CONSOLE_MAX_LINES,
-    15,//CONSOLE_VIS_LINES,
+    CONSOLE_MAX_LINES,
+    CONSOLE_VIS_LINES,
     COLOR_LOG_BG
 };
-
-int initConsoleLog()
-{
-    g_ConsoleLog.line_count = 0;
-    g_ConsoleLog.line_read = 0;
-    g_ConsoleLog.line_write = 0;
-
-    g_ConsoleLog.Buffer.count = 0;
-    g_ConsoleLog.Buffer.read = 0;
-    g_ConsoleLog.Buffer.write = 0;
-
-    g_ConsoleLog.Lines[0].str = getBufferHead(&g_ConsoleLog.Buffer);
-    g_ConsoleLog.Lines[0].len = 0;
-    g_ConsoleLog.Lines[0].color = 0;
-}
 
 int initConsole()
 {
@@ -68,7 +56,7 @@ int quitConsole()
 void enterConsole()
 {
     setStateFlags(STATE_CONSOLE, STATE_ENABLE_DRAW);
-    g_Input.flags |= (INPUT_FLAG_TEXT|INPUT_FLAG_REPEAT);
+    g_Input.flags |= (INPUT_FLAG_WRITE_TEXT|INPUT_FLAG_REPEAT_KEYS);
     g_Input.input_field = &ConsoleInput;
     g_Input.input_callback = consoleInput;
 }
@@ -76,7 +64,7 @@ void enterConsole()
 void leaveConsole()
 {
     clearStateFlags(STATE_CONSOLE, STATE_ENABLE_DRAW);
-    g_Input.flags &= ~(INPUT_FLAG_TEXT|INPUT_FLAG_REPEAT);
+    g_Input.flags &= ~(INPUT_FLAG_WRITE_TEXT|INPUT_FLAG_REPEAT_KEYS);
 }
 
 void updateConsole()
@@ -116,7 +104,7 @@ Params_t getCommandArgs(id_t cmd_id, char* arg_str)
     return args;
 }
 
-void consoleInput(InputField_t* input)
+void consoleInput(TextInput_t* input)
 {
     Event_t cmd;
     Params_t info = getCommandToken(input->buffer, input->length);
@@ -130,7 +118,7 @@ void consoleInput(InputField_t* input)
     }
     else
         print(COLOR_ERROR_TEXT, "%s", input->buffer);
-        //print(COLOR_ERROR_TEXT, "Unknown command: %s\n", input->buffer);
+        //print(COLOR_ERROR_TEXT, "Unknown: %s\n", input->buffer);
     
     resetInput(input);
 }

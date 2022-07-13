@@ -12,11 +12,11 @@
 #define KEYSTATE_DOWN       0x01
 #define KEYHANDLER_INT      9
 
-#define INPUT_FLAG_CAPS     BIT_0
-#define INPUT_FLAG_REPEAT   BIT_1
-#define INPUT_FLAG_GLOBAL   BIT_2
-#define INPUT_FLAG_UI       BIT_3
-#define INPUT_FLAG_TEXT     BIT_4
-#define INPUT_FLAG_GAME     BIT_5
+#define INPUT_FLAG_CAPS_LOCK     BIT_0
+#define INPUT_FLAG_REPEAT_KEYS   BIT_1
+#define INPUT_FLAG_GLOBAL_KEYS   BIT_2
+#define INPUT_FLAG_UI_KEYS       BIT_3
+#define INPUT_FLAG_WRITE_TEXT    BIT_4
+#define INPUT_FLAG_GAME_KEYS     BIT_5
 
 #endif/* INP_DEF_H */

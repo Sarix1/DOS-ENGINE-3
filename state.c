@@ -73,12 +73,10 @@ int pushState(id_t new)
             int i = 0;
             id_t old = getTopState();
             States[old].leave();
-
             while (g_StateMgr.Stack[i]->id != new) i++;
             while (i < g_StateMgr.state_count-1)
                 g_StateMgr.Stack[i] = g_StateMgr.Stack[++i];
             g_StateMgr.Stack[i] = &States[new];
-
             States[new].enter();
         }
     }
@@ -89,14 +87,13 @@ int pushState(id_t new)
             id_t old = getTopState();
             States[old].leave();
         }
-        
         g_StateMgr.state_count++;
         setTopState(new);
-
         States[new].flags = STATE_FLAGS_ALL;
         States[new].init();
         States[new].enter();
     }
+
     return 0;
 }
 

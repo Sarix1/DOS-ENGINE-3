@@ -40,12 +40,12 @@ int quitGame()
 
 void enterGame()
 {
-    g_Input.flags |= INPUT_FLAG_GAME;
+    g_Input.flags |= INPUT_FLAG_GAME_KEYS;
 }
 
 void leaveGame()
 {
-    g_Input.flags &= ~INPUT_FLAG_GAME;
+    g_Input.flags &= ~INPUT_FLAG_GAME_KEYS;
 }
 
 void updateGame()

@@ -4,7 +4,7 @@
 #include "input.h"
 #include "timer.h"
 #include "sys_typ.h"
-#include "inp_txt.h"
+#include "txt_inp.h"
 
 Input_t g_Input = {0};
 KeyMap_t KeyMap_Basic = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_Y, KEY_N};
@@ -60,11 +60,11 @@ static void handleInputEvents() // keymap should be an array of commands
 
         // handle global keys here (esc, F10, etc.)
         // first priority over everything, allows exiting text input mode (or any other mode)
-        if ((g_Input.flags & INPUT_FLAG_GLOBAL)
+        if ((g_Input.flags & INPUT_FLAG_GLOBAL_KEYS)
             && handleGlobalKeys(event))
             continue;
 
-        if ((g_Input.flags & INPUT_FLAG_TEXT)
+        if ((g_Input.flags & INPUT_FLAG_WRITE_TEXT)
             && handleTextInput(event) == HANDLED)
             continue;
 
@@ -73,7 +73,7 @@ static void handleInputEvents() // keymap should be an array of commands
         //    && handleUIControl(event))
         //    continue;
 
-        if ((g_Input.flags & INPUT_FLAG_GAME)
+        if ((g_Input.flags & INPUT_FLAG_GAME_KEYS)
             && handleGameControl(event) == HANDLED)
             continue;
     }
@@ -154,7 +154,7 @@ int initInput()
 {
     initKeyHandler();
     g_Input.keymap = &KeyMap_Basic;
-    g_Input.flags |= INPUT_FLAG_GLOBAL;
+    g_Input.flags |= INPUT_FLAG_GLOBAL_KEYS;
 
     return SUCCESS;
 }

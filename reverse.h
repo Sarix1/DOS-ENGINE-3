@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-uint8_t reverse_bits(uint8_t x);
+byte reverse_byte(byte x);
 
 #endif/* REVERSE_H */

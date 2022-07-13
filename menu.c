@@ -2,7 +2,7 @@
 #include <string.h>
 #include "common.h"
 #include "menu.h"
-#include "inp_txt.h"
+#include "txt_inp.h"
 #include "draw_txt.h"
 //#include "input.h"
 #include "draw.h"

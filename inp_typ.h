@@ -32,7 +32,7 @@ typedef struct
     byte          queue_head;
     byte          queue_tail;
 
-    InputField_t* input_field;
+    TextInput_t* input_field;
     fnp_input     input_callback;
 } Input_t;
 

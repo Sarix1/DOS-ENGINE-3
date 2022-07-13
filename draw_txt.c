@@ -1,18 +1,39 @@
 #include <stdio.h>
 #include "common.h"
+#include "timer.h"
+
+#include "vid_def.h"
+#include "draw.h"
 #include "draw_txt.h"
+#include "font.h"
+#include "reverse.h"
+
 #include "txt_def.h"
 #include "txt_typ.h"
-#include "vid_def.h"
-#include "reverse.h"
-#include "timer.h"
-#include "font.h"
-#include "draw.h"
+#include "txt_inp.h"
 
 static const byte far* charset_rom = (byte far*)CHARSET_ROM;
-
-//static byte far* charset = (byte far*)CHARSET_ROM; ////
 static byte far* charset = charset_8x8;
+
+enum CHARSETS
+{
+    CHARSET_DEFAULT,
+    CHARSET_RETRO
+};
+
+void setFont(int font_id)
+{
+    switch (font_id)
+    {
+    default:
+    case CHARSET_DEFAULT:
+        charset = charset_rom;
+        break;
+    case CHARSET_RETRO:
+        charset = charset_8x8;
+        break;
+    }
+}
 
 void drawChar8x8(int x, int y, byte symbol, byte color)
 {
@@ -22,7 +43,7 @@ void drawChar8x8(int x, int y, byte symbol, byte color)
     
     while (rows--)
     {
-        byte row_pixels = reverse_bits(*(char_offset++));
+        byte row_pixels = reverse_byte(*(char_offset++));
         byte far* pix = row_start;
 
         while (row_pixels)
@@ -70,7 +91,7 @@ int drawText(int x, int y, const max_cols, const max_rows, char* string, byte co
         {     
         // CRLF
         case '\n':
-            drawText_newline:
+        drawText_newline:
             newlines++;
             if (--rows == 0)
                 return newlines;
@@ -119,50 +140,56 @@ void drawText_fast(int x, int y, char* str, int len, byte color)
     return;
 }
 
+void drawLogLine(int x, int y, Log_t* log, Line_t* line)
+{
+    // if line string split across the end and start of the buffer, it treat as two strings
+    if (line->end < line->start)
+    {
+        drawText_fast(x, y, line->start, log->Buffer.end - line->start, line->color);
+        x += CHAR_WIDTH*(log->Buffer.end - line->start);
+        drawText_fast(x, y, log->Buffer.start, line->end - log->Buffer.start, line->color);
+    }
+    // otherwise straightforwardly determine length by subtracting end-start pointers
+    else
+        drawText_fast(x, y, line->start, (line->end - line->start), line->color);
+}
+
 void drawLog(int x, int y, Log_t* log)
 {
-    int line, num_lines;
+    size_t lines_to_draw, lines;
+    Line_t* line;
     // draw background
-    drawRectFill_fast(x, y,
-        (log->max_cols * CHAR_WIDTH),
-        (log->vis_lines * CHAR_HEIGHT),
-        log->bg_color);
-
-    // determine which line to start with, how many to draw
-    if (log->line_count > log->vis_lines)
+    drawRectFill_fast(x, y, (log->max_cols * CHAR_WIDTH), (log->vis_lines * CHAR_HEIGHT), log->bg_color);
+    // nothing on buffer; return
+    if ((logNumChars(log)) == 0)
+        return;
+    // calculate how many lines to draw
+    lines = logNumNewLines(log)+1;
+    if (lines > log->vis_lines)
     {
-        num_lines = log->vis_lines;
-        line = log->line_read + (log->line_count - log->vis_lines);
-        if (line >= log->max_lines)
+        lines_to_draw = log->vis_lines;
+        line = log->L_read + (lines - log->vis_lines);
+        if (line >= log->L_end)
             line -= log->max_lines;
     }
     else
     {
-        num_lines = log->line_count;
-        line = log->line_read;
+        lines_to_draw = lines;
+        line = log->L_read;
     }
-
-    // draw lines
-    if (log->line_count == 0)
-        return;
-
-    x = 0;
-    y += (log->vis_lines - num_lines) * CHAR_HEIGHT;
-
-    while(num_lines--)
+    // draw the lines
+    y += (log->vis_lines - lines_to_draw) * CHAR_HEIGHT;
+    while (lines_to_draw--)
     {
-        //fprintf(stderr, "draw line %d\n", line);
-        drawText_fast(x, y,
-            log->Lines[line].str,
-            log->Lines[line].len,
-            log->Lines[line].color);
-
-        incAndWrap(line, log->max_lines);
+        drawLogLine(x, y, log, line);
         y += CHAR_HEIGHT;
+        line++;
+        if (line == log->L_end)
+            line = log->L_end;
     }
 }
 
-void drawInput(int x, int y, int max_cols, InputField_t* input, byte color)
+void drawInput(int x, int y, int max_cols, TextInput_t* input, byte color)
 {
     int length, offset;
     // draw background

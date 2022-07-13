@@ -7,7 +7,7 @@
 
 #include "console.h"
 #include "input.h"
-#include "inp_txt.h"
+#include "txt_inp.h"
 #include "txt_def.h"
 
 void setTextColor(byte fore, byte back)
@@ -39,7 +39,7 @@ void print(byte color, char* format, ...)
     if (g_System.print_flags & PRINT_FLAG_CONSOLE)
     {
         va_start(args, format);
-        v_writeLog_f(&g_ConsoleLog, color, format, args);
+        v_logWrite_f(&g_ConsoleLog, color, format, args);
         va_end(args);
     }
 }
