@@ -20,6 +20,6 @@ extern char debug[NUM_DEBUG][DEBUG_STR_LEN];
 
 void updateStats();
 
-#endif
+#endif/* DEBUG_H */
 
 #endif/* DEBUG_H */

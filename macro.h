@@ -54,7 +54,12 @@
 #define LOWEST_SET_BIT32(x) ((x) & 0xFFFF ? LOWEST_SET_BIT16(x) : 16 + LOWEST_SET_BIT16((x) >> 16))
 #define LOWEST_SET_BIT(x)   LOWEST_SET_BIT32(x)
 
-#define ASSERT(exp)     if (!(exp)) fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n")
-#define SAFE_CALL(f)    if (f != NULL) f()
+#define SAFE_CALL(f)    if ((f) != NULL) (f)()
+
+#if DEBUG_ASSERT == 1
+#define ASSERT(exp)     if (!(exp)) {fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); quit();}
+#else
+#define ASSERT(exp)     
+#endif
 
 #endif/* MACRO_H */

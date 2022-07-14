@@ -2,14 +2,15 @@
 #define TYPES_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __WATCOMC__
 #include <stdbool.h>
-#else
+#else   // erase these if there are conflicts
 typedef uint8_t bool;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
-#endif/* TYPES_H */
+#endif
 
 typedef int32_t  fix16_16;
 typedef fix16_16 fixp;

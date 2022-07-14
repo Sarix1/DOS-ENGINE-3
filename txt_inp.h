@@ -53,6 +53,15 @@ inline size_t logLineLen(Log_t* log, Line_t* line)
         (line->end - line->start);
 }
 
+inline void logPruneLine(Log_t* log)
+{
+    log->Buffer.read = log->L_read->end;
+    log->L_read++;
+    if (log->L_read == log->L_end)
+        log->L_read = log->L_start;
+}
+
+
 inline void logPutChar(Log_t* log, byte c)
 {
     *log->Buffer.write = c;
@@ -63,22 +72,15 @@ inline void logPutChar(Log_t* log, byte c)
         logPruneLine(log);
 }
 
-inline void logPruneLine(Log_t* log)
-{
-    log->Buffer.read = log->L_read->end;
-    log->L_read++;
-    if (log->L_read == log->L_end)
-        log->L_read = log->L_start;
-}
-
 inline void logNewLine(Log_t* log, byte color)
 {
+    log->L_write->end = log->Buffer.write;
     log->L_write++;
     if (log->L_write == log->L_end)
         log->L_write = log->L_start;
     if (log->L_write == log->L_read)
         logPruneLine(log);
-    log->L_write->start = log->L_write->end = log->Buffer.write;
+    log->L_write->start = log->Buffer.write;
     log->L_write->color = color;
 }
 

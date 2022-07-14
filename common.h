@@ -1,6 +1,12 @@
 //#ifndef COMMON_H
 //#define COMMON_H
 
+#define DEBUG_INFO      1
+#define DEBUG_ASSERT    1
+#define DEBUG_SYSTEM    0
+#define DEBUG_HITBOX    0
+#define ASPECT          1
+
 #include "watcom.h"
 #include "bits.h"
 #include "status.h"
@@ -8,11 +14,6 @@
 #include "macro.h"
 #include "types.h"
 #include "vid_def.h"
-
-#define DEBUG_INFO      1
-#define SYSTEM_MSG      0
-#define DEBUG_HITBOX    0
-#define ASPECT          1
 
 #if DEBUG_INFO == 1
 #include "debug.h"

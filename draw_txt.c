@@ -144,13 +144,17 @@ void drawLogLine(int x, int y, Log_t* log, Line_t* line)
     // if line string split across the end and start of the buffer, treat it as two strings
     if (line->end < line->start)
     {
+        ASSERT((log->Buffer.end - line->start) + (log->Buffer.start, line->end - log->Buffer.start) == logLineLen(log, line));
         drawText_fast(x, y, line->start, log->Buffer.end - line->start, line->color);
         x += CHAR_WIDTH*(log->Buffer.end - line->start);
         drawText_fast(x, y, log->Buffer.start, line->end - log->Buffer.start, line->color);
     }
     // otherwise straightforwardly determine length by subtracting end-start pointers
     else
+    {
+        ASSERT(line->end - line->start == logLineLen(log, line));
         drawText_fast(x, y, line->start, (line->end - line->start), line->color);
+    }
 }
 
 void drawLog(int x, int y, Log_t* log)
@@ -182,6 +186,7 @@ void drawLog(int x, int y, Log_t* log)
 
     if (line > log->L_write)
     {
+        ASSERT(line <= log->L_end);
         while (line != log->L_end)
         {
             drawLogLine(x, y, log, line);
