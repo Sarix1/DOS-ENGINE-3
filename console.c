@@ -12,8 +12,8 @@
 #include "state.h"
 #include "print.h"
 
-static char far console_input_buffer[CONSOLE_INPUT_SIZE] = {0};
-static char far console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
+static byte far console_input_buffer[CONSOLE_INPUT_SIZE] = {0};
+static byte far console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
 static Line_t far console_log_lines[CONSOLE_MAX_LINES] = {0};
 
 static TextInput_t ConsoleInput =

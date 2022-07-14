@@ -57,7 +57,7 @@
 #define SAFE_CALL(f)    if ((f) != NULL) (f)()
 
 #if DEBUG_ASSERT == 1
-#define ASSERT(exp)     if (!(exp)) {fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); quit();}
+#define ASSERT(exp)     if (!(exp)) {fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); exit();}
 #else
 #define ASSERT(exp)     
 #endif
