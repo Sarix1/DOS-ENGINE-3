@@ -137,12 +137,11 @@ void drawText_fast(int x, int y, char* str, int len, byte color)
         drawChar8x8(x, y, *(str++), color);
         x += CHAR_WIDTH;
     }
-    return;
 }
 
 void drawLogLine(int x, int y, Log_t* log, Line_t* line)
 {
-    // if line string split across the end and start of the buffer, it treat as two strings
+    // if line string split across the end and start of the buffer, treat it as two strings
     if (line->end < line->start)
     {
         drawText_fast(x, y, line->start, log->Buffer.end - line->start, line->color);
@@ -156,7 +155,8 @@ void drawLogLine(int x, int y, Log_t* log, Line_t* line)
 
 void drawLog(int x, int y, Log_t* log)
 {
-    size_t lines_to_draw, lines;
+    int total_lines;
+    int lines_to_draw;
     Line_t* line;
     // draw background
     drawRectFill_fast(x, y, (log->max_cols * CHAR_WIDTH), (log->vis_lines * CHAR_HEIGHT), log->bg_color);
@@ -164,28 +164,37 @@ void drawLog(int x, int y, Log_t* log)
     if ((logNumChars(log)) == 0)
         return;
     // calculate how many lines to draw
-    lines = logNumNewLines(log)+1;
-    if (lines > log->vis_lines)
+    total_lines = logNumNewLines(log)+1;
+    if (total_lines > log->vis_lines)
     {
         lines_to_draw = log->vis_lines;
-        line = log->L_read + (lines - log->vis_lines);
+        line = log->L_read + (total_lines - log->vis_lines);
         if (line >= log->L_end)
             line -= log->max_lines;
     }
     else
     {
-        lines_to_draw = lines;
+        lines_to_draw = total_lines;
         line = log->L_read;
     }
     // draw the lines
     y += (log->vis_lines - lines_to_draw) * CHAR_HEIGHT;
-    while (lines_to_draw--)
+
+    if (line > log->L_write)
+    {
+        while (line != log->L_end)
+        {
+            drawLogLine(x, y, log, line);
+            y += CHAR_HEIGHT;
+            line++;
+        }
+        line = log->L_start;
+    }
+    while (line <= log->L_write)
     {
         drawLogLine(x, y, log, line);
         y += CHAR_HEIGHT;
         line++;
-        if (line == log->L_end)
-            line = log->L_end;
     }
 }
 
