@@ -61,7 +61,7 @@ static void handleInputEvents() // keymap should be an array of commands
         // handle global keys here (esc, F10, etc.)
         // first priority over everything, allows exiting text input mode (or any other mode)
         if ((g_Input.flags & INPUT_FLAG_GLOBAL_KEYS)
-            && handleGlobalKeys(event))
+            && handleGlobalKeys(event) == HANDLED)
             continue;
 
         if ((g_Input.flags & INPUT_FLAG_WRITE_TEXT)
