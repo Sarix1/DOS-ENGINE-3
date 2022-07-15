@@ -30,12 +30,12 @@ static int initSubSystem(int sus) // sus = SUbSystem
     int status;
 
     #if SYSTEM_MSG == 1
-    print(COLOR_SYSTEM_TEXT, "Init %s...", subsys_strings[sus]);
+    print(COLOR_LOG_SYSTEM, "Init %s...", subsys_strings[sus]);
     #endif
     if (isSubSysInit(sus))
     {
         #if SYSTEM_MSG == 1
-        print(COLOR_SYSTEM_TEXT, "already init!\n");
+        print(COLOR_LOG_SYSTEM, "already init!\n");
         #endif
 
         return SUCCESS;
@@ -47,7 +47,7 @@ static int initSubSystem(int sus) // sus = SUbSystem
         g_System.init_flags |= BIT(sus);
 
         #if SYSTEM_MSG == 1
-        print(COLOR_SYSTEM_TEXT, "OK\n");
+        print(COLOR_LOG_SYSTEM, "OK\n");
         #endif
 
         return SUCCESS;
@@ -70,7 +70,7 @@ static int quitSubSystem(int sus)
     int status;
 
     #if SYSTEM_MSG == 1
-    print(COLOR_SYSTEM_TEXT, "Quit %s\n", subsys_strings[sus]);
+    print(COLOR_LOG_SYSTEM, "Quit %s\n", subsys_strings[sus]);
     #endif
     if (!isSubSysInit(sus))    
         return SUCCESS;
@@ -119,6 +119,6 @@ void quit()
     for (i = NUM_SUBSYSTEMS-1; i >= 0; i--)
     {
         if (quitSubSystem(i) != SUCCESS)
-            print(COLOR_SYSTEM_TEXT, "Could not quit %s\n", subsys_strings[i]);
+            print(COLOR_LOG_SYSTEM, "Could not quit %s\n", subsys_strings[i]);
     }
 }

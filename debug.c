@@ -23,7 +23,7 @@ void updateStats()
 void drawDebug()
 {
     int i;
-    int y = 100;
+    int y = 0;
 
     for (i = 0; i < NUM_DEBUG; i++)
     {
