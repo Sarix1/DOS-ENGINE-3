@@ -98,7 +98,7 @@ static void handleScanCode(byte scan)
     }
 
     event.keycode = (scan & ~KEYSTATE_RELEASED) | status;
-    event.time    = getTime();
+    event.time    = getTick();
 
     if (scan & KEYSTATE_RELEASED)
     {

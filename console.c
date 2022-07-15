@@ -117,8 +117,7 @@ void consoleInput(TextInput_t* input)
         print(COLOR_LOG_TEXT, "%s\n", input->buffer);
     }
     else
-        print(COLOR_ERROR_TEXT, "%s", input->buffer);
-        //print(COLOR_ERROR_TEXT, "Unknown: %s\n", input->buffer);
+        print(COLOR_ERROR_TEXT, "Unknown: %s\n", input->buffer);
     
     resetInput(input);
 }
