@@ -79,6 +79,8 @@ void logWrite(Log_t* log, char* str, int len, byte color)
     }
     
     do {
+        ASSERT_L_AB(logLineLen(log, log->L_write), >=, 0);
+        ASSERT_L_AB(logLineLen(log, log->L_write), <=, log->max_cols);
         free_space = log->max_cols - logLineLen(log, log->L_write);
         if (free_space == 0)
         {
@@ -86,6 +88,7 @@ void logWrite(Log_t* log, char* str, int len, byte color)
             continue;
         }
         write_len = MIN(free_space, len);
+        ASSERT_L_AB(write_len, >=, 0);
         logWrite_(log, str, write_len, color);
         len -= write_len;
         str += write_len;
@@ -97,6 +100,7 @@ void logWrite(Log_t* log, char* str, int len, byte color)
 void v_logWrite_f(Log_t* log, byte color, byte* format, va_list args)
 {
     int len = vsnprintf(format_buffer, FORMAT_BUFFER_SIZE, format, args);
+    len = MIN(len, FORMAT_BUFFER_SIZE);
     logWrite(log, format_buffer, len, color);
 }
 

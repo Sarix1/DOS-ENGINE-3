@@ -35,7 +35,7 @@ Log_t g_ConsoleLog =
     console_log_lines+CONSOLE_MAX_LINES,
     console_log_lines,
     console_log_lines,
-    MAX_SCREEN_COLS,
+    MAX_SCREEN_COLS-10,
     CONSOLE_MAX_LINES,
     CONSOLE_VIS_LINES,
     COLOR_LOG_BG

@@ -57,9 +57,38 @@
 #define SAFE_CALL(f)    if ((f) != NULL) (f)()
 
 #if DEBUG_ASSERT == 1
-#define ASSERT(exp)     if (!(exp)) {fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); exit();}
+
+#define ASSERT(exp) \
+    if (!(exp)) { \
+        fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); \
+        exit(); \
+    }
+
+#define ASSERT_L(exp) \
+    if (!(exp)) { \
+        fprintf(stderr, "Error: expression evaluated as false\n" #exp "\n"); \
+        while(1); \
+    }
+
+#define ASSERT_AB(a,op,b) \
+    if (!((a) op (b))) { \
+        fprintf(stderr, "Error: expression evaluated as false\n" #a " " #op " " #b "\n" \
+        #a " == %ld\n" #b " == %ld\n", (long)(a), (long)(b)); \
+        exit(); \
+    }
+
+#define ASSERT_L_AB(a,op,b) \
+    if (!((a) op (b))) { \
+        fprintf(stderr, "Error: expression evaluated as false\n" #a " " #op " " #b "\n" \
+        #a " == %ld\n" #b " == %ld\n", (long)(a), (long)(b)); \
+        while(1); \
+    }
+
 #else
 #define ASSERT(exp)     
+#define ASSERT_R(exp,r)   
+#define ASSERT_L(exp)   
+#define ASSERT_LR(exp,r)   
 #endif
 
 #endif/* MACRO_H */
