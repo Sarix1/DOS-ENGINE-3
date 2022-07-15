@@ -70,7 +70,7 @@ void drawMenu(Menu_t* menu)
         if (i == menu->selection)
         {
             color = menu->Items[i].color_selected == DEFAULT ? menu->selected_color : menu->Items[i].color_selected;
-            drawText_null(x, y, menu->Items[i].text, 0, color, TEXT_FX_NONE);
+            drawText_null(x, y, menu->Items[i].text, color, TEXT_FX_NONE);
         }
         else
         {
@@ -78,7 +78,7 @@ void drawMenu(Menu_t* menu)
                 color = menu->Items[i].enabled == ENABLED ? menu->enabled_color : menu->disabled_color;
             else
                 color = menu->Items[i].color;
-            drawText_null(x, y, menu->Items[i].text, 0, color, TEXT_FX_NONE);
+            drawText_null(x, y, menu->Items[i].text, color, TEXT_FX_NONE);
         }
         y += menu->leading;
     }
