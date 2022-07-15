@@ -51,6 +51,7 @@ void initRingBuf(RingBuf_t* buf, byte* str, size_t size)
 // auxiliary function, do not call directly
 static inline void logWrite_(Log_t* log, byte* str, int len, byte color)
 {
+    int lastlen = len;
     ASSERT_L(len > 0);
 
     log->L_write->color = color;
@@ -64,8 +65,12 @@ static inline void logWrite_(Log_t* log, byte* str, int len, byte color)
 
     #if DEBUG_INFO == 1
     sprintf(debug[DEBUG_CONSOLE],
-        "newlines %u\nchars %u\nlast write len %d\n",
-            logNumNewLines(log), logNumChars(log), len);
+        "newlines %u\n"
+        "chars %u\n"
+        "last write len %d\n",
+        logNumNewLines(log),
+        logNumChars(log),
+        lastlen);
     #endif
 }
 
@@ -76,6 +81,8 @@ void logWrite(Log_t* log, char* str, int len, byte color)
 
     if (len == 0)
         len = strlen(str);
+    if (len <= 0 || len >= logMaxChars(log))
+        return;
     if (logNumChars(log) == 0)
     {
         log->L_write->start = log->Buffer.write;
@@ -83,16 +90,17 @@ void logWrite(Log_t* log, char* str, int len, byte color)
     }
     
     do {
-        ASSERT_L_AB(logLineLen(log, log->L_write), >=, 0);
-        ASSERT_L_AB(logLineLen(log, log->L_write), <=, log->max_cols);
+        ASSERT_AB_L(logLineLen(log, log->L_write), >=, 0);
+        ASSERT_AB_L(logLineLen(log, log->L_write), <=, log->max_cols);
         free_space = log->max_cols - logLineLen(log, log->L_write);
         if (free_space == 0)
         {
+            ASSERT_L(len > 0);
             logNewLine(log, color);
             continue;
         }
         write_len = MIN(free_space, len);
-        ASSERT_L_AB(len, >=, 0);
+        ASSERT_AB_L(len, >=, 0);
         logWrite_(log, str, write_len, color);
         len -= write_len;
         str += write_len;

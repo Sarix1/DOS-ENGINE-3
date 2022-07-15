@@ -4,13 +4,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef __WATCOMC__
-#include <stdbool.h>
-#else   // erase these if there are conflicts
-typedef uint8_t bool;
-typedef long long int64_t;
-typedef unsigned long long uint64_t;
-#endif
+//#include <stdbool.h>
+typedef unsigned char bool;
+#define true 1
+#define false 0
 
 typedef int32_t  fix16_16;
 typedef fix16_16 fixp;

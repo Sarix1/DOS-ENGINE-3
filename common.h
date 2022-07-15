@@ -1,7 +1,7 @@
 //#ifndef COMMON_H
 //#define COMMON_H
 
-#define DEBUG_INFO      1
+#define DEBUG_INFO      0
 #define DEBUG_ASSERT    1
 #define DEBUG_SYSTEM    0
 #define DEBUG_HITBOX    0

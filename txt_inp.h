@@ -22,6 +22,11 @@ void logWrite           (Log_t* log, char* str, int len, byte color);
 void v_logWrite_f       (Log_t* log, byte color, char* format, va_list args);
 void logWrite_f         (Log_t* log, byte color, char* format, ...);
 
+inline int logLineEmpty(Line_t* line)
+{
+    return (line->start == line->end);
+}
+
 inline size_t logMaxChars(Log_t* log)
 {
     return log->Buffer.end - log->Buffer.start;
@@ -59,8 +64,8 @@ inline size_t logLineLen(Log_t* log, Line_t* line)
     long linelen = (line->end < line->start) ?
         logMaxChars(log) - (line->start - line->end) :
         (line->end - line->start);
-    ASSERT_L_AB(linelen, >=, 0);
-    ASSERT_L_AB(linelen, <=, log->max_cols);
+    ASSERT_AB_L(linelen, >=, 0);
+    ASSERT_AB_L(linelen, <=, log->max_cols);
 
     return linelen;
 }
