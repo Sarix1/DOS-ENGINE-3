@@ -167,14 +167,14 @@ void drawLog(int x, int y, Log_t* log)
     // nothing on buffer; return
     if ((logNumChars(log)) == 0)
         return;
-    // calculate how many lines to draw
+    // calculate how many lines to draw, and which line to begin with
     total_lines = logNumNewLines(log)+1;
     if (total_lines > log->vis_lines)
     {
         lines_to_draw = log->vis_lines;
-        line = log->L_read + (total_lines - log->vis_lines);
-        if (line >= log->L_end)
-            line -= log->max_lines;
+        line = log->L_write - log->vis_lines;
+        if (line < log->L_start)
+            line += logMaxLines(log);
     }
     else
     {
@@ -186,7 +186,7 @@ void drawLog(int x, int y, Log_t* log)
 
     if (line > log->L_write)
     {
-        ASSERT(line <= log->L_end);
+        ASSERT(line < log->L_end);
         while (line != log->L_end)
         {
             drawLogLine(x, y, log, line);

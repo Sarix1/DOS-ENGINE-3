@@ -86,6 +86,7 @@ inline void logPutChar(Log_t* log, byte c)
 
 inline void logNewLine(Log_t* log, byte color)
 {
+    ASSERT_L(logLineLen(log, log->L_write) <= log->max_cols);
     log->L_write->end = log->Buffer.write;
     log->L_write++;
     if (log->L_write == log->L_end)
@@ -95,6 +96,7 @@ inline void logNewLine(Log_t* log, byte color)
     log->L_write->start = log->Buffer.write;
     log->L_write->end = log->Buffer.write;
     log->L_write->color = color;
+    ASSERT_L(logLineLen(log, log->L_write) <= log->max_cols);
 }
 
 void resetInput     (TextInput_t* input);

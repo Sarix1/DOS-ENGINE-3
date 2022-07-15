@@ -58,24 +58,31 @@
 
 #if DEBUG_ASSERT == 1
 
+#ifndef ASSERT_STR
+#define ASSERT_STR
+const char* assert_str = "Error: Assert failure\n";
+#else
+extern const char* assert_str; 
+#endif
+
 // evaluate expression; exit on false
 #define ASSERT(exp) \
     if (!(exp)) { \
-        fprintf(stderr, "%s:%d: Error: Assert Failure\n", __FILE__, __LINE__); \
+        fprintf(stderr, "%s:%d: Error: Assert failure\n", __FILE__, __LINE__); \
         fprintf(stderr, "%s\n", #exp); \
         exit(); }
 
 // evaluate expression; infinite loop on false
 #define ASSERT_L(exp) \
     if (!(exp)) { \
-        fprintf(stderr, "%s:%d: Error: Assert Failure\n", __FILE__, __LINE__); \
+        fprintf(stderr, "%s:%d: Error: Assert failure\n", __FILE__, __LINE__); \
         fprintf(stderr, "%s\n", #exp); \
         while(1); }
 
 // evaluate A op B, print their values as (long) and exit on false
 #define ASSERT_AB(a,op,b) \
     if (!((a) op (b))) { \
-        fprintf(stderr, "%s:%d: Error: Assert Failure\n", __FILE__, __LINE__); \
+        fprintf(stderr, "%s:%d: Error: Assert failure\n", __FILE__, __LINE__); \
         fprintf(stderr, "%s %s %s\n%ld %s %ld\n" \
             #a, #op, #b, (long)(a), #op, (long)(b)); \
         exit(); }
@@ -83,7 +90,7 @@
 // evaluate A op B, print their values as (long) and infinite loop on false
 #define ASSERT_L_AB(a,op,b) \
     if (!((a) op (b))) { \
-        fprintf(stderr, "%s:%d: Error: Assert Failure\n", __FILE__, __LINE__); \
+        fprintf(stderr, "%s:%d: Error: Assert failure\n", __FILE__, __LINE__); \
         fprintf(stderr, "%s %s %s\n%ld %s %ld\n" \
             #a, #op, #b, (long)(a), #op, (long)(b)); \
         while(1); }

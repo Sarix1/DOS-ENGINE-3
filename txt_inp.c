@@ -51,10 +51,8 @@ void initRingBuf(RingBuf_t* buf, byte* str, size_t size)
 // auxiliary function, do not call directly
 static inline void logWrite_(Log_t* log, byte* str, int len, byte color)
 {
-    #if DEBUG_INFO == 1
-    sprintf(debug[DEBUG_CONSOLE], "newlines %d\nchars %d\nlast write len %d\n", // debug
-                                    logNumNewLines(log), logNumChars(log), len);
-    #endif
+    ASSERT_L(len > 0);
+
     log->L_write->color = color;
     while (len--)
     {
@@ -63,6 +61,12 @@ static inline void logWrite_(Log_t* log, byte* str, int len, byte color)
             logNewLine(log, color);
     }
     log->L_write->end = log->Buffer.write;
+
+    #if DEBUG_INFO == 1
+    sprintf(debug[DEBUG_CONSOLE],
+        "newlines %u\nchars %u\nlast write len %d\n",
+            logNumNewLines(log), logNumChars(log), len);
+    #endif
 }
 
 // receives a string, does no formatting
@@ -88,11 +92,11 @@ void logWrite(Log_t* log, char* str, int len, byte color)
             continue;
         }
         write_len = MIN(free_space, len);
-        ASSERT_L_AB(write_len, >=, 0);
+        ASSERT_L_AB(len, >=, 0);
         logWrite_(log, str, write_len, color);
         len -= write_len;
         str += write_len;
-        ASSERT(write_len != 0);
+        ASSERT(!(write_len == 0 && len > 0));
     } while (len > 0);
 }
 
