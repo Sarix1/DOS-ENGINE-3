@@ -5,9 +5,9 @@
 #include "txt_def.h"
 #include "txt_typ.h"
 
-#define CONSOLE_BUFFER_SIZE 256
+#define CONSOLE_BUFFER_SIZE 1024
 #define CONSOLE_INPUT_SIZE  256
-#define CONSOLE_MAX_LINES   8
+#define CONSOLE_MAX_LINES   64
 #define CONSOLE_VIS_LINES   8
 
 extern Log_t g_ConsoleLog;

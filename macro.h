@@ -54,7 +54,7 @@
 #define LOWEST_SET_BIT32(x) ((x) & 0xFFFF ? LOWEST_SET_BIT16(x) : 16 + LOWEST_SET_BIT16((x) >> 16))
 #define LOWEST_SET_BIT(x)   LOWEST_SET_BIT32(x)
 
-#define SAFE_CALL(f)    if ((f) != NULL) (f)()
+#define SAFE_CALL(f) if ((f) != NULL) (f)()
 
 #if DEBUG_ASSERT == 1
 #include <stdio.h>
