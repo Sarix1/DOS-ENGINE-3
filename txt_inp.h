@@ -46,11 +46,23 @@ inline size_t logNumNewLines(Log_t* log)
         log->L_write - log->L_read;
 }
 
+/*
 inline size_t logLineLen(Log_t* log, Line_t* line)
 {
     return (line->end < line->start) ?
         logMaxChars(log) - (line->start - line->end) :
         (line->end - line->start);
+}
+*/
+inline size_t logLineLen(Log_t* log, Line_t* line)
+{
+    long linelen = (line->end < line->start) ?
+        logMaxChars(log) - (line->start - line->end) :
+        (line->end - line->start);
+    ASSERT_L_AB(linelen, >=, 0);
+    ASSERT_L_AB(linelen, <=, log->max_cols);
+
+    return linelen;
 }
 
 inline void logPruneLine(Log_t* log)
@@ -81,6 +93,7 @@ inline void logNewLine(Log_t* log, byte color)
     if (log->L_write == log->L_read)
         logPruneLine(log);
     log->L_write->start = log->Buffer.write;
+    log->L_write->end = log->Buffer.write;
     log->L_write->color = color;
 }
 
