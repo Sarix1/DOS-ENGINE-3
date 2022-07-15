@@ -129,7 +129,7 @@ void drawText_len(int x, int y, char* str, int len, byte color)
     }
 }
 
-void drawText_fast(int x, int y, char* str, int len, byte color)
+void drawText_null(int x, int y, char* str, int len, byte color)
 {
     while (*str)
     {
