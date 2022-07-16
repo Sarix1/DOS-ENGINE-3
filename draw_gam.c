@@ -40,14 +40,14 @@ void drawObject(Object_t* obj)
 
     if (obj->angle != obj->last_angle)
     {
-        vecs2scaleRotV(obj->points, obj->poly->points, obj->poly->num_points, obj->scale, obj->dir);
+        vecs2scaleRotV(obj->tPoly.points, obj->poly->points, obj->poly->num_points, obj->scale, obj->dir);
         obj->last_angle = obj->angle;
     }
 
     #if ASPECT == 1
-    drawShapeAspect(pos, obj->points, obj->num_points, obj->color);
+    drawShapeAspect(pos, obj->tPoly.points, obj->tPoly.num_points, obj->color);
     #else
-    drawShape(pos, obj->points, obj->num_points, obj->color);
+    drawShape(pos, obj->tPoly.points, obj->tPoly.num_points, obj->color);
     #endif
 }
 

@@ -37,6 +37,14 @@ inline int fixpWholeToDec(fixp x)
     return (int)(x >> FIX_SHIFT);
 }
 
+char* fixpStr(fixp x)
+{
+    static char str[16];
+    sprintf(str, "%d.%d", fixpWholeToDec(x), fixpFracToDec(x));
+
+    return str;
+}
+
 inline int64_t square(int32_t x)
 {
     return (int64_t)x*x;
@@ -88,6 +96,33 @@ inline fixp intToFixpSqrt(int32_t x)
 inline fixp fixpSinAcos_slow(fixp x)
 {
     return fixpSqrt(FIX_ONE-fixpSquare(x));
+}
+
+inline Vec2 vec2turnLeft(Vec2 v)
+{
+    Vec2 u;
+    u.x = v.y;
+    u.y = -v.x;
+
+    return u;
+}
+
+inline Vec2 vec2turnRight(Vec2 v)
+{
+    Vec2 u;
+    u.x = -v.y;
+    u.y = v.x;
+
+    return u;
+}
+
+inline Vec2 vec2inverse(Vec2 v)
+{
+    Vec2 u;
+    u.x = -v.x;
+    u.y = -v.y;
+
+    return u;
 }
 
 inline Vec2 vec2add(Vec2 a, Vec2 b)

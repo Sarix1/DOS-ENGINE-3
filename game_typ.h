@@ -18,8 +18,7 @@ typedef struct
     control_t control;
     //gfx
     Poly_t* poly;
-    Vec2 points[16];
-    int num_points;
+    Poly_t tPoly;
     fixp scale;
     byte color;
 } Object_t;

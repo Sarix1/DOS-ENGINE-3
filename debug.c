@@ -13,9 +13,9 @@ char debug[NUM_DEBUG][DEBUG_STR_LEN];
 void updateStats()
 {
     sprintf(debug[DEBUG_FPS],
-        "Time: %ld Minutes, %ld Seconds\nTicks: %ld, Frames: %ld\nFPS: %d, Avg. FPS: %d.%d",
+        "Time: %ld Minutes, %ld Seconds\nTicks: %ld, Frames: %ld\nFPS: %d, Avg. FPS: %s",
         g_Timer.seconds/60, g_Timer.seconds%60, g_Timer.ticks, g_Timer.frames, g_Timer.fps,
-        fixpWholeToDec(g_Timer.fps_avg), fixpFracToDec(g_Timer.fps_avg));
+        fixpStr(g_Timer.fps_avg));
 }
 
 #include "draw_txt.h"

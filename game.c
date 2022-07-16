@@ -91,8 +91,8 @@ id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
     obj->angvel = angvel;
     obj->radius = radius;
     obj->poly = poly;
-    memcpy(obj->points, poly->points, poly->num_points*sizeof(Vec2));
-    obj->num_points = obj->poly->num_points;
+    memcpy(obj->tPoly.points, poly->points, poly->num_points*sizeof(Vec2));
+    obj->tPoly.num_points = obj->poly->num_points;
     obj->scale = scale;
     obj->color = color;
 

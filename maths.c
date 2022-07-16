@@ -257,6 +257,7 @@ Vec2 vec2proj(Vec2 v, Vec2 u)
     return p;
 }
 
+// check: does this return the same thing as vec2proj?
 Vec2 vec2projOff(Vec2 offset, Vec2 v, Vec2 u)
 {
     Vec2 p;
@@ -298,7 +299,7 @@ Vec2 vec2fixpProjOff(Vec2 offset, Vec2 v, Vec2 u)
     return p;
 }
 
-int lineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int intersectLineLine(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const int64_t a1 = p1.y-p0.y;
     const int64_t a2 = p3.y-p2.y;
@@ -318,7 +319,7 @@ int lineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpLineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int fixpIntersectLineLine(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const int64_t a1 = p1.y-p0.y;
     const int64_t a2 = p3.y-p2.y;
@@ -338,7 +339,7 @@ int fixpLineLineIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int segSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int intersectSegSeg(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const int32_t a1    = p1.y-p0.y;
     const int32_t a2    = p3.y-p2.y;
@@ -385,7 +386,7 @@ int segSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpSegSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int fixpIntersectSegSeg(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const fixp a1    = p1.y-p0.y;
     const fixp a2    = p3.y-p2.y;
@@ -432,7 +433,7 @@ int fixpSegSegIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int lineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
+int intersectLineSeg(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
 {
     const int32_t a1 = l1.y-l0.y;
     const int32_t a2 = s1.y-s0.y;
@@ -466,7 +467,7 @@ int lineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpLineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
+int fixpIntersectLineSeg(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
 {
     const fixp a1 = l1.y-l0.y;
     const fixp a2 = s1.y-s0.y;
@@ -500,7 +501,7 @@ int fixpLineSegIntersect(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int raySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
+int intersectRaySeg(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
 {
     const int32_t a1 = r1.y-r0.y;
     const int32_t a2 = s1.y-s0.y;
@@ -540,7 +541,7 @@ int raySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpRaySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
+int fixpIntersectRaySeg(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
 {
     const fixp a1 = r1.y-r0.y;
     const fixp a2 = s1.y-s0.y;
@@ -580,7 +581,7 @@ int fixpRaySegIntersect(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int rayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
+int intersectRayLine(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
 {
     const int32_t a1 = r1.y - r0.y;
     const int32_t a2 = l1.y - l0.y;
@@ -606,7 +607,7 @@ int rayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpRayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
+int fixpIntersectRayLine(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
 {
     const fixp a1 = r1.y - r0.y;
     const fixp a2 = l1.y - l0.y;
@@ -632,7 +633,7 @@ int fixpRayLineIntersect(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int rayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int intersectRayRay(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const int32_t a1 = p1.y-p0.y;
     const int32_t a2 = p3.y-p2.y;
@@ -663,7 +664,7 @@ int rayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int fixpRayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
+int fixpIntersectRayRay(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const fixp a1 = p1.y-p0.y;
     const fixp a2 = p3.y-p2.y;
@@ -694,7 +695,7 @@ int fixpRayRayIntersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     return DO_INTERSECT;
 }
 
-int lineCircleIntersect(Vec2 p0, Vec2 p1, Vec2 circle, int64_t r_squared)
+int intersectLineCircle(Vec2 p0, Vec2 p1, Vec2 circle, int64_t r_squared)
 {
     Vec2 p = vec2projOff(circle, p0, p1);
     int64_t d_squared = vec2distSquare(p, circle);
@@ -705,12 +706,12 @@ int lineCircleIntersect(Vec2 p0, Vec2 p1, Vec2 circle, int64_t r_squared)
     return DONT_INTERSECT;
 }
 
-int rayCircleIntersect(Vec2 a, Vec2 b, Vec2 circle, int32_t r_squared)
+int intersectRayCircle(Vec2 a, Vec2 b, Vec2 circle, int32_t r_squared)
 {
     ;
 }
 
-int segCircleIntersect(Vec2 a, Vec2 b, Vec2 circle, int32_t r_squared)
+int intersectSegCircle(Vec2 a, Vec2 b, Vec2 circle, int32_t r_squared)
 {
     ;
 }
