@@ -286,7 +286,7 @@ inline int64_t vec2square(Vec2 v)
 }
 
 int32_t sqrt(int32_t x);
-inline int32_t vec2Len(Vec2 v)
+inline int32_t vec2len(Vec2 v)
 {
     return sqrt((int64_t)v.x*v.x + (int64_t)v.y*v.y);
 }
@@ -296,7 +296,7 @@ inline int32_t vec2dist(Vec2 a, Vec2 b)
     a.x -= b.x;
     a.y -=  b.y;
 
-    return vec2Len(a);
+    return vec2len(a);
 }
 
 inline int64_t vec2distSquare(Vec2 a, Vec2 b)

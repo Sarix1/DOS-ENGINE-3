@@ -73,66 +73,68 @@ int intersectOBB(Vec2 p0, Vec2 dir0, fixp w0, fixp h0,
                  Vec2 p1, Vec2 dir1, fixp w1, fixp h1)
 {
     Vec2 dist = vec2sub(p1,p0);
-    Vec2 axis, axis_x, axis_y, vw, vh;
-    fixp proj_dist, proj_mag, proj_w, proj_h;
+    Vec2 local_x0 = vec2turnLeft(dir0);
+    Vec2 local_y0 = dir0;
+    Vec2 local_x1 = vec2turnLeft(dir1);
+    Vec2 local_y1 = dir1;
+    fixp proj_len, proj_w0, proj_h0, proj_w1, proj_h1;
 
-    axis_x = vec2turnLeft(dir0);
-    axis_y = dir0;
-    vw = vec2scale(axis_x,w0);
-    vh = vec2scale(axis_y,h0);
-
-    proj_dist = vec2dot(axis_x,dist);
-    proj_mag = sqrtF2F(proj_dist);
-    proj_w = vec2dot(axis_x,vw);
-    proj_h = vec2dot(axis_x,vh);
-    if (proj_dist > w0*proj_mag + proj_w + proj_h)
+    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_x0,dist));
+    proj_w1 = vec2fixpLen(vec2fixpProjOff(p0,local_x0,vec2scale(local_x1, w1)));
+    proj_h1 = vec2fixpLen(vec2fixpProjOff(p0,local_x0,vec2scale(local_y1, h1)));
+    
+    if (proj_len > w0 + proj_w1 + proj_h1)
+        return DONT_INTERSECT;
+    
+    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_y0,dist));
+    proj_w1 = vec2fixpLen(vec2fixpProjOff(p0,local_y0,vec2scale(local_x1, w1)));
+    proj_h1 = vec2fixpLen(vec2fixpProjOff(p0,local_y0,vec2scale(local_y1, h1)));
+    if (proj_len > h0 + proj_w1 + proj_h1)
+        return DONT_INTERSECT;
+    
+    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_x1,dist));
+    proj_w0 = vec2fixpLen(vec2fixpProjOff(p0,local_x1,vec2scale(local_x0, w0)));
+    proj_h0 = vec2fixpLen(vec2fixpProjOff(p0,local_x1,vec2scale(local_y0, h0)));
+    if (proj_len > w1 + proj_w0 + proj_h0)
         return DONT_INTERSECT;
 
-    proj_dist = vec2dot(axis_y,dist);
-    proj_mag = sqrtF2F(proj_dist);
-    proj_w = vec2dot(axis_y,vw);
-    proj_h = vec2dot(axis_y,vh);
-    if (proj_dist > h0*proj_mag + proj_w + proj_h)
-        return DONT_INTERSECT;
-
-    axis_x = vec2turnLeft(dir1);
-    axis_y = dir1;
-    vw = vec2scale(axis_x,w1);
-    vh = vec2scale(axis_y,h1);
-
-    proj_dist = vec2dot(axis_x,dist);
-    proj_mag = sqrtF2F(proj_dist);
-    proj_w = vec2dot(axis_x,vw);
-    proj_h = vec2dot(axis_x,vh);
-    if (proj_dist > w1*proj_mag + proj_w + proj_h)
-        return DONT_INTERSECT;
-
-    proj_dist = vec2dot(axis_y,dist);
-    proj_mag = sqrtF2F(proj_dist);
-    proj_w = vec2dot(axis_y,vw);
-    proj_h = vec2dot(axis_y,vh);
-    if (proj_dist > h1*proj_mag + proj_w + proj_h)
+    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_y1,dist));
+    proj_w0 = vec2fixpLen(vec2fixpProjOff(p0,local_y1,vec2scale(local_x0, w0)));
+    proj_h0 = vec2fixpLen(vec2fixpProjOff(p0,local_y1,vec2scale(local_y0, h0)));
+    if (proj_len > h1 + proj_w0 + proj_h0)
         return DONT_INTERSECT;
 
     return DO_INTERSECT;
 }
 
+int intersectAll()
+{
+    int intersect = 0;
+    int i = 1;
+    while (i < g_Game.object_count)
+    {
+        intersect |= intersectOBB
+        (
+            PLAYER_OBJ->pos,           PLAYER_OBJ->dir,
+            PLAYER_OBJ->radius,        PLAYER_OBJ->radius,
+            g_Game.Objects[i].pos,     g_Game.Objects[i].dir,
+            g_Game.Objects[i].radius,  g_Game.Objects[i].radius
+        );
+        i++;
+    }
+    return intersect;
+}
+
 void physics()
 {
-    int i;
+    int i = 0;
     PLAYER_OBJ->control = player_control; // ^ should be in a "logic" loop that  comes before physics, and includes AI, game logic, etc.
     controlObject(PLAYER_OBJ);
     moveAllObjects();
 
-    i = intersectOBB
-    (
-        PLAYER_OBJ->pos,           PLAYER_OBJ->dir,
-        PLAYER_OBJ->radius,        PLAYER_OBJ->radius,
-        g_Game.Objects[1].pos,     g_Game.Objects[1].dir,
-        g_Game.Objects[1].radius,  g_Game.Objects[1].radius
-    );
 
-    if (i == DO_INTERSECT)
+
+    if (intersectAll() == DO_INTERSECT)
         PLAYER_OBJ->color = COLOR_RED;
     else
         PLAYER_OBJ->color = COLOR_BLUE;
