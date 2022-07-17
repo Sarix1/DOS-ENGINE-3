@@ -20,10 +20,18 @@ int initGame()
 
     g_Game.player_id = spawnShip(newVec2_I2F(SCREEN_WIDTH/2, A(SCREEN_HEIGHT/2)), DEG_90);
 
-    createObject(newVec2_I2F(50, 50),  newVec2(-FIXP_025,-FIXP_005), newVec2_angle(0),  DEG_5, F(15),F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
-    createObject(newVec2_I2F(300,150), newVec2( FIXP_078,-FIXP_056), newVec2_angle(0), -DEG_3, F(22),F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
-    createObject(newVec2_I2F(100,180), newVec2(-FIXP_050, FIXP_1_4), newVec2_angle(0),  DEG_9, F(22),F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
-    createObject(newVec2_I2F(200,80),  newVec2( FIXP_015, FIXP_1_5), newVec2_angle(0), -DEG_2, F(22),F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
+    // objects should use template structs
+    // createObject accepts position, velocity, angle, etc. but nothing further
+    // it will copy values from the template, and override some of them with given parameters
+    // OBJTYPE_ enum will index the template
+    // if a pointer to an object struct is given as parameter, that will be used instead
+    // otherwise NULL should be given
+    // this enables copying of objects, that should have its own wrapper function to erode user parameters
+    // it should accept an angle or direction; if direction is {0,0} angle will be used
+    createObject(newVec2_I2F(50, 50),  newVec2(-FIXP_025,-FIXP_005), newVec2_angle(0),  DEG_5, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(300,150), newVec2( FIXP_078,-FIXP_056), newVec2_angle(0), -DEG_3, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(100,180), newVec2(-FIXP_050, FIXP_1_4), newVec2_angle(0),  DEG_9, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(200,80),  newVec2( FIXP_015, FIXP_1_5), newVec2_angle(0), -DEG_2, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
 
     g_Game.Objects[1].vel.x = F(-1);
     g_Game.Objects[2].vel.x = F(1);

@@ -169,6 +169,13 @@ int intersectAll()
     return any_intersect;
 }
 
+// object hitbox shape is circle, AABB, OBB, or convex polygon
+// nested switch case algorithm using bitmasks (0000 0000 mask colltype for 1st obj, and 2nd obj)
+// will choose correct function to use
+// OBB sweep box around object generated, stretched for velocity, to catch collisions at high speeds
+// AABB box around that to perform further filtering
+// can OBB be skipped for low velocities?
+
 void physics()
 {
     int i = 0;
