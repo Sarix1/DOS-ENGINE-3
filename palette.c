@@ -75,9 +75,9 @@ void scalePalette(Palette_t* pal, fixp scale)
     int i;
     for (i = 0; i < 256; i++)
     {
-        pal->colors[i].r = (pal->colors[i].r*scale) >> FIX_SHIFT;
-        pal->colors[i].g = (pal->colors[i].g*scale) >> FIX_SHIFT;
-        pal->colors[i].b = (pal->colors[i].b*scale) >> FIX_SHIFT;
+        pal->colors[i].r = (pal->colors[i].r*scale) >> FIXP_SHIFT;
+        pal->colors[i].g = (pal->colors[i].g*scale) >> FIXP_SHIFT;
+        pal->colors[i].b = (pal->colors[i].b*scale) >> FIXP_SHIFT;
     }
 }
 
@@ -95,19 +95,19 @@ void setWholePalette(Palette_t* pal, byte r, byte g, byte b)
 void fadeToBlack()
 {
     int i, j;
-    fixp scale = FIX_ONE;
+    fixp scale = FIXP_ONE;
     Palette_t pal;
     getVGAPalette(&pal);
 
     for (i = 0; i < 256; i++)
     {
-        scale -= (FIX_ONE/256);
+        scale -= (FIXP_ONE/256);
         for (j = 0; j < 256; j++)
         {
             setVGAPaletteColor_RGB(j,
-            (pal.colors[j].r*scale) >> FIX_SHIFT,
-            (pal.colors[j].g*scale) >> FIX_SHIFT,
-            (pal.colors[j].b*scale) >> FIX_SHIFT);
+            (pal.colors[j].r*scale) >> FIXP_SHIFT,
+            (pal.colors[j].g*scale) >> FIXP_SHIFT,
+            (pal.colors[j].b*scale) >> FIXP_SHIFT);
         }
         //delay(0.5);
     }
@@ -122,13 +122,13 @@ void fadeFromBlack()
 
     for (i = 0; i < 256; i++)
     {
-        scale += (FIX_ONE/256);
+        scale += (FIXP_ONE/256);
         for (j = 0; j < 256; j++)
         {
             setVGAPaletteColor_RGB(j,
-            (pal.colors[j].r*scale) >> FIX_SHIFT,
-            (pal.colors[j].g*scale) >> FIX_SHIFT,
-            (pal.colors[j].b*scale) >> FIX_SHIFT);
+            (pal.colors[j].r*scale) >> FIXP_SHIFT,
+            (pal.colors[j].g*scale) >> FIXP_SHIFT,
+            (pal.colors[j].b*scale) >> FIXP_SHIFT);
         }
         //delay(0.5);
     }

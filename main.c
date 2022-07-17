@@ -8,8 +8,8 @@ int main(void)
     
     pushState(STATE_GAME);
     pushState(STATE_CONSOLE); 
-    print(COLOR_CYAN, "Stuff: %ld\n", abs(FIX_ONE));
-    print(COLOR_CYAN, "Stuff: %ld\n", abs(-FIX_ONE));
+    print(COLOR_CYAN, "Stuff: %ld\n", abs(FIXP_ONE));
+    print(COLOR_CYAN, "Stuff: %ld\n", abs(-FIXP_ONE));
 
     while (g_System.running)
     {

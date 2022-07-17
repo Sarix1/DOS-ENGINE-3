@@ -88,37 +88,37 @@ int intersectOBB(Vec2 p0, Vec2 dir0, fixp w0_half, fixp h0_half,
     Vec2 local_y0 = dir0;
     Vec2 local_x1 = vec2_90left(dir1);
     Vec2 local_y1 = dir1;
-    Vec2 v_w, v_h;
-    fixp proj_len, proj_w, proj_h;
 
-    v_w = vec2scale(local_x1, w1_half);
-    v_h = vec2scale(local_y1, h1_half);
+    fixp proj_len, proj_wh, x0x1, x0y1, y0x1, y0y1;
 
+    x0x1 = abs(vec2fixpDot(local_x0, local_x1));
+    x0y1 = abs(vec2fixpDot(local_x0, local_y1));
+
+    // x0
+    proj_wh = fixpMul(w1_half,x0x1) + fixpMul(h1_half,x0y1);
     proj_len = abs(vec2fixpDot(local_x0, dist));
-    proj_w  = abs(vec2fixpDot(local_x0,  v_w));
-    proj_h  = abs(vec2fixpDot(local_x0,  v_h));
-    if (proj_len > w0_half + (proj_w+proj_h))
+    if (proj_len > w0_half + proj_wh)
         return DONT_INTERSECT;
 
+    y0x1 = abs(vec2fixpDot(local_y0, local_x1));
+    y0y1 = abs(vec2fixpDot(local_y0, local_y1));
+
+    // y0
+    proj_wh = fixpMul(w1_half,y0x1) + fixpMul(h1_half,y0y1);
     proj_len = abs(vec2fixpDot(local_y0, dist));
-    proj_w  = abs(vec2fixpDot(local_y0,  v_w));
-    proj_h  = abs(vec2fixpDot(local_y0,  v_h));
-    if (proj_len > h0_half + (proj_w+proj_h))
+    if (proj_len > h0_half + proj_wh)
         return DONT_INTERSECT;
 
-    v_w = vec2scale(local_x0, w0_half);
-    v_h = vec2scale(local_y0, h0_half);
-
+    // x1
+    proj_wh = fixpMul(w0_half,x0x1) + fixpMul(h0_half,y0x1);
     proj_len = abs(vec2fixpDot(local_x1, dist));
-    proj_w  = abs(vec2fixpDot(local_x1,  v_w));
-    proj_h  = abs(vec2fixpDot(local_x1,  v_h));
-    if (proj_len > w1_half + (proj_w+proj_h))
+    if (proj_len > w1_half + proj_wh)
         return DONT_INTERSECT;
 
+    // y1
+    proj_wh = fixpMul(w0_half,x0y1) + fixpMul(h0_half,y0y1);
     proj_len = abs(vec2fixpDot(local_y1, dist));
-    proj_w  = abs(vec2fixpDot(local_y1,  v_w));
-    proj_h  = abs(vec2fixpDot(local_y1,  v_h));
-    if (proj_len > h1_half + (proj_w+proj_h))
+    if (proj_len > h1_half + proj_wh)
         return DONT_INTERSECT;
 
     return DO_INTERSECT;

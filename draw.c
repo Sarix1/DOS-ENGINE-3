@@ -392,7 +392,7 @@ void drawCircleFill(int x, int y, int diameter, byte color)
     const int radius       = (diameter >> 1) + 1;
     const int remainder    = diameter & 1;
     const int r_offset     = Y_OFFSET(remainder^1);
-    const fixp inv_radius  = FIX_ONE / (radius == 0 ? 1 : radius);
+    const fixp inv_radius  = FIXP_ONE / (radius == 0 ? 1 : radius);
     fixp y_scale_factor    = 0;
     // offsets
     int dx = radius-1;
@@ -425,7 +425,7 @@ void drawCircleFrame(int x, int y, int diameter, byte color)
     const byte far* center  = g_Video.surface + Y_OFFSET(y-1) + x-1;
     const int radius        = (diameter >> 1);
     const int not_remainder = ~(diameter & 1);
-    const fixp inv_radius    = FIX_ONE / (radius == 0 ? 1 : radius);
+    const fixp inv_radius    = FIXP_ONE / (radius == 0 ? 1 : radius);
     fixp y_scale_factor      = 0;
     // offsets
     byte far* pix = center;
@@ -508,13 +508,13 @@ void drawShapeAspect(Vec2 pos, Vec2* points, int num_points, byte color)
     Vec2 a, b, first;
 
     first.x = b.x = pos.x + points[0].x;
-    first.y = b.y = pos.y + fixpMul((points[0].y), (FIX_ONE*5)/6);
+    first.y = b.y = pos.y + fixpMul((points[0].y), (FIXP_ONE*5)/6);
     
     for (i=0; i < num_points-1; i++)
     {
         a = b;
         b.x = pos.x + points[i+1].x;
-        b.y = pos.y + fixpMul((points[i+1].y), (FIX_ONE*5)/6);
+        b.y = pos.y + fixpMul((points[i+1].y), (FIXP_ONE*5)/6);
 
         drawLine(a, b, color);
     }
@@ -528,13 +528,13 @@ void drawShapeAspect(Vec2 pos, Vec2* points, int num_points, byte color)
     int i;
     Vec2 a, b, first;
     first.x = b.x = points[0].x + pos.x;
-    first.y = b.y = fixpMul((points[0].y + pos.y), ((FIX_ONE*5)/6));
+    first.y = b.y = fixpMul((points[0].y + pos.y), ((FIXP_ONE*5)/6));
 
     for (i=0; i < num_points-1; i++)
     {
         a = b;
         b.x = points[i+1].x + pos.x;
-        b.y = fixpMul((points[i+1].y + pos.y), ((FIX_ONE*5)/6));
+        b.y = fixpMul((points[i+1].y + pos.y), ((FIXP_ONE*5)/6));
 
         drawLine(a, b, color);
     }

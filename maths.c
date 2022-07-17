@@ -102,16 +102,16 @@ fixp fixpSin(brad angle)
     {
         angle = (angle & DEG_90_MASK) >> (BRAD_SHIFT-SIN_TABLE_SHIFT-2);
 
-        return -(fixp)(SinTable[angle] << (FIX_SHIFT-SIN_SHIFT));
+        return -(fixp)(SinTable[angle] << (FIXP_SHIFT-SIN_SHIFT));
     }
     angle = (angle & DEG_90_MASK) >> (BRAD_SHIFT-SIN_TABLE_SHIFT-2);
 
-    return (fixp)(SinTable[angle] << (FIX_SHIFT-SIN_SHIFT));
+    return (fixp)(SinTable[angle] << (FIXP_SHIFT-SIN_SHIFT));
 }
 
 fixp fixpSinAcos(fixp x) // this could be inlined, but needs access to the table
 {
-    return SinAcosTable[(x >> (FIX_SHIFT-SIN_ACOS_TABLE_SHIFT)) & FIX_FRAC_MASK];
+    return SinAcosTable[(x >> (FIXP_SHIFT-SIN_ACOS_TABLE_SHIFT)) & FIXP_FRAC_MASK];
 }
 
 Vec2 vec2rot(Vec2 v, brad angle)
@@ -119,8 +119,8 @@ Vec2 vec2rot(Vec2 v, brad angle)
     Vec2 u;
     const int64_t sini = fixpSin(angle);
     const int64_t cosi = fixpCos(angle);
-    u.x = (cosi*v.x + sini*v.y) >> FIX_SHIFT;
-    u.y = -(cosi*v.y - sini*v.x) >> FIX_SHIFT;
+    u.x = (cosi*v.x + sini*v.y) >> FIXP_SHIFT;
+    u.y = -(cosi*v.y - sini*v.x) >> FIXP_SHIFT;
 
     return u;
 }
@@ -128,8 +128,8 @@ Vec2 vec2rot(Vec2 v, brad angle)
 Vec2 vec2rotV(Vec2 v, Vec2 dir)
 {
     Vec2 u;
-    u.x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIX_SHIFT;
-    u.y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIX_SHIFT;
+    u.x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIXP_SHIFT;
+    u.y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIXP_SHIFT;
 
     return u;
 }
@@ -144,8 +144,8 @@ void vecs2rot(Vec2* dest, Vec2* src, int num_vecs, brad angle)
     for (i=0; i<num_vecs; i++)
     {
         v = src[i];
-        dest[i].x = (cosi*v.x + sini*v.y) >> FIX_SHIFT;
-        dest[i].y = -(cosi*v.y - sini*v.x) >> FIX_SHIFT;
+        dest[i].x = (cosi*v.x + sini*v.y) >> FIXP_SHIFT;
+        dest[i].y = -(cosi*v.y - sini*v.x) >> FIXP_SHIFT;
     }
 }
 
@@ -157,8 +157,8 @@ void vecs2rotV(Vec2* dest, Vec2* src, int num_vecs, Vec2 dir)
     for (i=0; i<num_vecs; i++)
     {
         v = src[i];
-        dest[i].x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIX_SHIFT;
-        dest[i].y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIX_SHIFT;
+        dest[i].x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIXP_SHIFT;
+        dest[i].y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIXP_SHIFT;
     }
 }
 
@@ -174,8 +174,8 @@ Vec2 vec2scaleRot(Vec2 v, fixp scale, brad angle)
     Vec2 u;
     const int64_t sini = fixpSin(angle);
     const int64_t cosi = fixpCos(angle);
-    u.x = ((int64_t)scale * (cosi*v.x + sini*v.y)) >> (FIX_SHIFT*2);
-    u.y = -((int64_t)scale * (cosi*v.y - sini*v.x)) >> (FIX_SHIFT*2);
+    u.x = ((int64_t)scale * (cosi*v.x + sini*v.y)) >> (FIXP_SHIFT*2);
+    u.y = -((int64_t)scale * (cosi*v.y - sini*v.x)) >> (FIXP_SHIFT*2);
 
     return u;
 }
@@ -186,10 +186,10 @@ Vec2 vec2scaleRot_safe(Vec2 v, fixp scale, brad angle)
     Vec2 u;
     const int64_t sini = fixpSin(angle);
     const int64_t cosi = fixpCos(angle);
-    v.x = ((uint64_t)v.x*scale) >> FIX_SHIFT;
-    v.y = ((uint64_t)v.y*scale) >> FIX_SHIFT;
-    u.x = (cosi*v.x + sini*v.y) >> FIX_SHIFT;
-    u.y = -(cosi*v.y - sini*v.x) >> FIX_SHIFT;
+    v.x = ((uint64_t)v.x*scale) >> FIXP_SHIFT;
+    v.y = ((uint64_t)v.y*scale) >> FIXP_SHIFT;
+    u.x = (cosi*v.x + sini*v.y) >> FIXP_SHIFT;
+    u.y = -(cosi*v.y - sini*v.x) >> FIXP_SHIFT;
 
     return u;
 }
@@ -197,8 +197,8 @@ Vec2 vec2scaleRot_safe(Vec2 v, fixp scale, brad angle)
 Vec2 vec2scaleRotV(Vec2 v, fixp scale, Vec2 dir)
 {
     Vec2 u;
-    u.x = ((int64_t)scale * ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y)) >> (FIX_SHIFT*2);
-    u.y = -((int64_t)scale * ((int64_t)dir.x*v.y - (int64_t)dir.y*v.x)) >> (FIX_SHIFT*2);
+    u.x = ((int64_t)scale * ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y)) >> (FIXP_SHIFT*2);
+    u.y = -((int64_t)scale * ((int64_t)dir.x*v.y - (int64_t)dir.y*v.x)) >> (FIXP_SHIFT*2);
 
     return u;
 }
@@ -207,10 +207,10 @@ Vec2 vec2scaleRotV(Vec2 v, fixp scale, Vec2 dir)
 Vec2 vec2scaleRotV_safe(Vec2 v, fixp scale, Vec2 dir)
 {
     Vec2 u;
-    v.x = ((uint64_t)v.x*scale) >> FIX_SHIFT;
-    v.y = ((uint64_t)v.y*scale) >> FIX_SHIFT;
-    u.x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIX_SHIFT;
-    u.y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIX_SHIFT;
+    v.x = ((uint64_t)v.x*scale) >> FIXP_SHIFT;
+    v.y = ((uint64_t)v.y*scale) >> FIXP_SHIFT;
+    u.x = ((int64_t)dir.x*v.x + (int64_t)dir.y*v.y) >> FIXP_SHIFT;
+    u.y = -((int64_t)dir.x*v.y - (int64_t)dir.y*v.x) >> FIXP_SHIFT;
 
     return u;
 }
@@ -303,16 +303,16 @@ int fixpIntersectLineLine(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     const int64_t a2 = p3.y-p2.y;
     const int64_t b1 = p0.x-p1.x;
     const int64_t b2 = p2.x-p3.x;
-    const int64_t c1 = (a1*p0.x + b1*p0.y) >> FIX_SHIFT;
-    const int64_t c2 = (a2*p2.x + b2*p2.y) >> FIX_SHIFT;
-    const int64_t denom = (a1*b2 - a2*b1) >> FIX_SHIFT;
+    const int64_t c1 = (a1*p0.x + b1*p0.y) >> FIXP_SHIFT;
+    const int64_t c2 = (a2*p2.x + b2*p2.y) >> FIXP_SHIFT;
+    const int64_t denom = (a1*b2 - a2*b1) >> FIXP_SHIFT;
     // detect parallel or collinear lines
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
-    intersect->y = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->x = (((b2*c1 - b1*c2) >> FIXP_SHIFT) + (denom>>1)) / denom;
+    intersect->y = (((a1*c2 - a2*c1) >> FIXP_SHIFT) + (denom>>1)) / denom;
 
     return DO_INTERSECT;
 }
@@ -370,17 +370,17 @@ int fixpIntersectSegSeg(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     const fixp a2    = p3.y-p2.y;
     const fixp b1    = p0.x-p1.x;
     const fixp b2    = p2.x-p3.x;
-    const int64_t c1    = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIX_SHIFT;
-    const int64_t c2    = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIX_SHIFT;
-    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    const int64_t c1    = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIXP_SHIFT;
+    const int64_t c2    = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIXP_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIXP_SHIFT;
     fixp ix, iy, dx_sign, dy_sign;
     // detect parallel or collinear lines
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
-    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIXP_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIXP_SHIFT) + (denom>>1)) / denom;
     // point not on segment p0-->p1?
     if (b1)
     {
@@ -451,8 +451,8 @@ int fixpIntersectLineSeg(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
     const fixp a2 = s1.y-s0.y;
     const fixp b1 = l0.x-l1.x;
     const fixp b2 = s0.x-s1.x;
-    const int64_t c1 = ((int64_t)a1*l0.x + (int64_t)b1*l0.y) >> FIX_SHIFT;
-    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIX_SHIFT;
+    const int64_t c1 = ((int64_t)a1*l0.x + (int64_t)b1*l0.y) >> FIXP_SHIFT;
+    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIXP_SHIFT;
     const int64_t denom = (int64_t)a1*b2 - (int64_t)a2*b1;
     fixp ix, iy, dx_sign, dy_sign;
     // detect parallel or collinear
@@ -460,8 +460,8 @@ int fixpIntersectLineSeg(Vec2 l0, Vec2 l1, Vec2 s0, Vec2 s1, Vec2* intersect)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
-    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIXP_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIXP_SHIFT) + (denom>>1)) / denom;
     // point not on segment p2-->p3?
     if (b2)
     {
@@ -525,17 +525,17 @@ int fixpIntersectRaySeg(Vec2 r0, Vec2 r1, Vec2 s0, Vec2 s1, Vec2* intersect)
     const fixp a2 = s1.y-s0.y;
     const fixp b1 = r0.x-r1.x;
     const fixp b2 = s0.x-s1.x;
-    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIX_SHIFT;
-    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIX_SHIFT;
-    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIXP_SHIFT;
+    const int64_t c2 = ((int64_t)a2*s0.x + (int64_t)b2*s0.y) >> FIXP_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIXP_SHIFT;
     fixp ix, iy, dx_sign, dy_sign;
     // detect parallel or collinear
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = ix = (((b2*c1 - b1*c2) + (denom>>1)) >> FIX_SHIFT) / denom;
-    intersect->y = iy = (((a1*c2 - a2*c1) + (denom>>1)) >> FIX_SHIFT) / denom;
+    intersect->x = ix = (((b2*c1 - b1*c2) + (denom>>1)) >> FIXP_SHIFT) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) + (denom>>1)) >> FIXP_SHIFT) / denom;
     // point not on ray p0-->p1?
     if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
         return DONT_INTERSECT;
@@ -591,17 +591,17 @@ int fixpIntersectRayLine(Vec2 r0, Vec2 r1, Vec2 l0, Vec2 l1, Vec2* intersect)
     const fixp a2 = l1.y - l0.y;
     const fixp b1 = r0.x - r1.x;
     const fixp b2 = l0.x - l1.x;
-    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIX_SHIFT;
-    const int64_t c2 = ((int64_t)a2*l0.x + (int64_t)b2*l0.y) >> FIX_SHIFT;
-    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    const int64_t c1 = ((int64_t)a1*r0.x + (int64_t)b1*r0.y) >> FIXP_SHIFT;
+    const int64_t c2 = ((int64_t)a2*l0.x + (int64_t)b2*l0.y) >> FIXP_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIXP_SHIFT;
     fixp ix, iy;
     // detect parallel or collinear
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
-    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIXP_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIXP_SHIFT) + (denom>>1)) / denom;
     // point not on ray p0-->p1?
     if (b1 && (r0.x < ix && r0.x > r1.x || r0.x > ix && r0.x < r1.x))
         return DONT_INTERSECT;
@@ -648,17 +648,17 @@ int fixpIntersectRayRay(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
     const fixp a2 = p3.y-p2.y;
     const fixp b1 = p0.x-p1.x;
     const fixp b2 = p2.x-p3.x;
-    const int64_t c1 = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIX_SHIFT;
-    const int64_t c2 = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIX_SHIFT;
-    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIX_SHIFT;
+    const int64_t c1 = ((int64_t)a1*p0.x + (int64_t)b1*p0.y) >> FIXP_SHIFT;
+    const int64_t c2 = ((int64_t)a2*p2.x + (int64_t)b2*p2.y) >> FIXP_SHIFT;
+    const int64_t denom = ((int64_t)a1*b2 - (int64_t)a2*b1) >> FIXP_SHIFT;
     fixp ix, iy;
     // detect parallel or collinear
     if (denom == 0)
         return DONT_INTERSECT;
     // line intersection point
     // +(denom>>1) fixes integer rounding error
-    intersect->x = ix = (((b2*c1 - b1*c2) >> FIX_SHIFT) + (denom>>1)) / denom;
-    intersect->y = iy = (((a1*c2 - a2*c1) >> FIX_SHIFT) + (denom>>1)) / denom;
+    intersect->x = ix = (((b2*c1 - b1*c2) >> FIXP_SHIFT) + (denom>>1)) / denom;
+    intersect->y = iy = (((a1*c2 - a2*c1) >> FIXP_SHIFT) + (denom>>1)) / denom;
     // point not on ray p0-->p1?
     if (b1 && (p0.x < ix && p0.x > p1.x || p0.x > ix && p0.x < p1.x))
         return DONT_INTERSECT;
