@@ -68,7 +68,7 @@ static inline void logWrite_(Log_t* log, byte* str, int len, byte color)
 void logWrite(Log_t* log, char* str, int len, byte color)
 {
     int free_space, write_len;
-
+    
     if (len == 0)
         len = strlen(str);
     if (len <= 0 || len >= logMaxChars(log))
@@ -98,6 +98,7 @@ void v_logWrite_f(Log_t* log, byte color, byte* format, va_list args)
 {
     int len = vsnprintf(format_buffer, FORMAT_BUFFER_SIZE, format, args);
     len = MIN(len, FORMAT_BUFFER_SIZE);
+    ASSERT(len > 0);
     logWrite(log, format_buffer, len, color);
 }
 

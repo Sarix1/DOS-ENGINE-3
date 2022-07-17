@@ -1,11 +1,15 @@
 #include "main.h"
+#include "print.h"
+#include "maths2.h"
 
 int main(void)
 {
     init();
     
-    pushState(STATE_CONSOLE);
-    //pushState(STATE_GAME);
+    pushState(STATE_GAME);
+    pushState(STATE_CONSOLE); 
+    print(COLOR_CYAN, "Stuff: %ld\n", abs(FIX_ONE));
+    print(COLOR_CYAN, "Stuff: %ld\n", abs(-FIX_ONE));
 
     while (g_System.running)
     {

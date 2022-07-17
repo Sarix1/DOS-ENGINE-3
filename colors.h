@@ -33,8 +33,10 @@
 #define COLOR_DEBUG_TEXT    COLOR_L_BLUE
 #define COLOR_DEBUG_LINE    COLOR_BLUE
 
-#define COLOR_SHIP          COLOR_L_GREEN
+#define COLOR_SHIP          COLOR_CYAN
 #define COLOR_ASTEROID      COLOR_D_GREY
+#define COLOR_HITBOX        COLOR_BLUE
+#define COLOR_HITBOX_ACTIVE COLOR_RED
 #define COLOR_BG            COLOR_BLACK
 
 #endif/* COLORS_H */

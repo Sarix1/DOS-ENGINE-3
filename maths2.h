@@ -7,42 +7,14 @@
 #include "math_def.h"
 #include "math_typ.h"
 
-inline Vec2 vec2(fixp x, fixp y)
+int32_t  sqrt   (int32_t x);
+fix16_16 sqrtI2F(int32_t x);
+fix16_16 sqrtF2F(fix16_16 x);
+fixp     fixpSin(brad angle);
+
+inline int32_t abs(int32_t x)
 {
-    Vec2 v;
-    v.y = x;
-    v.y = y;
-
-    return v;
-}
-
-inline Vec2 vec2i(int x, int y)
-{
-    Vec2 v;
-    v.x = ((fixp)x)<<FIX_SHIFT;
-    v.y = ((fixp)y)<<FIX_SHIFT;
-
-    return v;
-}
-
-// for printing out fractional part of fixp value
-inline int fixpFracToDec(fixp x)
-{
-    return (int)(((int64_t)(x & FIX_FRAC_MASK)*1000L)/FIX_ONE);
-}
-
-// for printing out whole part of fixp value
-inline int fixpWholeToDec(fixp x)
-{
-    return (int)(x >> FIX_SHIFT);
-}
-
-char* fixpStr(fixp x)
-{
-    static char str[16];
-    sprintf(str, "%d.%d", fixpWholeToDec(x), fixpFracToDec(x));
-
-    return str;
+    return (x < 0) ? -x : x;
 }
 
 inline int64_t square(int32_t x)
@@ -50,7 +22,6 @@ inline int64_t square(int32_t x)
     return (int64_t)x*x;
 }
 
-fixp fixpSin(brad angle);
 inline fixp fixpCos(brad angle)
 {
     return fixpSin(angle+DEG_90);
@@ -81,13 +52,11 @@ inline int64_t fixpSquare(fixp x)
     return ((int64_t)x*x) >> FIX_SHIFT;
 }
 
-fix16_16 sqrtF2F(fix16_16 x);
 inline fixp fixpSqrt(fixp x)
 {
     return sqrtF2F(x);
 }
 
-fix16_16 sqrtI2F(int32_t x);
 inline fixp intToFixpSqrt(int32_t x)
 {
     return sqrtI2F(x);
@@ -98,7 +67,88 @@ inline fixp fixpSinAcos_slow(fixp x)
     return fixpSqrt(FIX_ONE-fixpSquare(x));
 }
 
-inline Vec2 vec2turnLeft(Vec2 v)
+// for printing out fractional part of fixp value
+inline int fixpFracToDec(fixp x)
+{
+    return (int)(((int64_t)(x & FIX_FRAC_MASK)*1000L)/FIX_ONE);
+}
+
+// for printing out whole part of fixp value
+inline int fixpWholeToDec(fixp x)
+{
+    return (int)(x >> FIX_SHIFT);
+}
+
+// for printing out a fixp value as a decimal fraction
+char* fixpStr(fixp x)
+{
+    static char str[16];
+    sprintf(str, "%d.%d", fixpWholeToDec(x), fixpFracToDec(x));
+
+    return str;
+}
+
+inline Vec2 newVec2(fixp x, fixp y)
+{
+    Vec2 v;
+    v.y = x;
+    v.y = y;
+
+    return v;
+}
+
+inline Vec2 newVec2_I2F(int x, int y)
+{
+    Vec2 v;
+    v.x = ((fixp)x)<<FIX_SHIFT;
+    v.y = ((fixp)y)<<FIX_SHIFT;
+
+    return v;
+}
+
+inline Vec2 newVec2_angle(brad angle)
+{
+    Vec2 v;
+    v.x = fixpCos(angle);
+    v.y = -fixpSin(angle);
+
+    return v;
+}
+
+inline Vec2 newVec2_len(brad angle, fixp length)
+{
+    Vec2 v;
+    v.x = ((int64_t)fixpCos(angle) * length) >> FIX_SHIFT;
+    v.y = ((int64_t)-fixpSin(angle) * length) >> FIX_SHIFT;
+
+    return v;
+}
+
+inline Vec2 vec2abs(Vec2 v)
+{
+    v.x = ABS(v.x);
+    v.y = ABS(v.y);
+
+    return v;
+}
+
+inline Vec2 vec2_I2F(Vec2 v)
+{
+    v.x <<= FIX_SHIFT;
+    v.y <<= FIX_SHIFT;
+
+    return v;
+}
+
+inline Vec2 vec2_F2I(Vec2 v)
+{
+    v.x >>= FIX_SHIFT;
+    v.y >>= FIX_SHIFT;
+
+    return v;
+}
+
+inline Vec2 vec2_90left(Vec2 v)
 {
     Vec2 u;
     u.x = v.y;
@@ -107,7 +157,7 @@ inline Vec2 vec2turnLeft(Vec2 v)
     return u;
 }
 
-inline Vec2 vec2turnRight(Vec2 v)
+inline Vec2 vec2_90right(Vec2 v)
 {
     Vec2 u;
     u.x = -v.y;
@@ -116,7 +166,7 @@ inline Vec2 vec2turnRight(Vec2 v)
     return u;
 }
 
-inline Vec2 vec2inverse(Vec2 v)
+inline Vec2 vec2inv(Vec2 v)
 {
     Vec2 u;
     u.x = -v.x;
@@ -189,22 +239,6 @@ inline Vec2 vec2scale(Vec2 v, fixp scale)
     return v;
 }
 
-inline Vec2 vec2intToFixp(Vec2 v)
-{
-    v.x <<= FIX_SHIFT;
-    v.y <<= FIX_SHIFT;
-
-    return v;
-}
-
-inline Vec2 vec2fixpToInt(Vec2 v)
-{
-    v.x >>= FIX_SHIFT;
-    v.y >>= FIX_SHIFT;
-
-    return v;
-}
-
 inline int32_t vec2cross(Vec2 a, Vec2 b)
 {
     return (a.x)*(b.y)-(a.y)*(b.x);
@@ -215,27 +249,6 @@ inline int32_t vec2fixpCross(Vec2 a, Vec2 b)
     return ((int64_t)a.x*b.y - (int64_t)a.y*b.x) >> FIX_SHIFT;
 }
 
-
-inline Vec3 vec3cross(Vec3 a, Vec3 b)
-{
-    Vec3 ab;
-    ab.x = a.y*b.z - a.z*b.y; 
-    ab.y = a.z*b.x - a.x*b.z; 
-    ab.z = a.x*b.y - a.y*b.x; 
-
-    return ab;
-}
-
-inline Vec3 vec3fixpCross(Vec3 a, Vec3 b)
-{
-    Vec3 ab;
-    ab.x = ((int64_t)a.y*b.z - (int64_t)a.z*b.y) >> FIX_SHIFT; 
-    ab.y = ((int64_t)a.z*b.x - (int64_t)a.x*b.z) >> FIX_SHIFT; 
-    ab.z = ((int64_t)a.x*b.y - (int64_t)a.y*b.x) >> FIX_SHIFT; 
-
-    return ab;
-}
-
 inline int32_t vec2dot(Vec2 a, Vec2 b)
 {
     return (a.x*b.x) + (a.y*b.y);
@@ -244,34 +257,6 @@ inline int32_t vec2dot(Vec2 a, Vec2 b)
 inline fixp vec2fixpDot(Vec2 a, Vec2 b)
 {
     return (fixp)(((int64_t)a.x*b.x + (int64_t)a.y*b.y) >> FIX_SHIFT);
-}
-
-inline int32_t vec3dot(Vec3 a, Vec3 b)
-{
-    return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
-}
-
-inline fixp vec3fixpDot(Vec3 a, Vec3 b)
-{
-    return (fixp)(((int64_t)a.x*b.x + (int64_t)a.y*b.y + (int64_t)a.z*b.z) >> FIX_SHIFT);
-}
-
-inline Vec2 vec2unit(brad angle)
-{
-    Vec2 v;
-    v.x = fixpCos(angle);
-    v.y = -fixpSin(angle);
-
-    return v;
-}
-
-inline Vec2 vec2a(brad angle, fixp length)
-{
-    Vec2 v;
-    v.x = ((int64_t)fixpCos(angle) * length) >> FIX_SHIFT;
-    v.y = ((int64_t)-fixpSin(angle) * length) >> FIX_SHIFT;
-
-    return v;
 }
 
 inline brad vec2angle(Vec2 v)
@@ -285,7 +270,6 @@ inline int64_t vec2square(Vec2 v)
     return ((int64_t)v.x*v.x + (int64_t)v.y*v.y);
 }
 
-int32_t sqrt(int32_t x);
 inline int32_t vec2len(Vec2 v)
 {
     return sqrt((int64_t)v.x*v.x + (int64_t)v.y*v.y);
@@ -327,6 +311,42 @@ inline fixp vec2fixpDistSquare(Vec2 a, Vec2 b)
     return vec2fixpLenSquare(vec2sub(b,a));
 }
 
+inline Vec2 vec2aspect(Vec2 v)
+{
+    v.y = a(v.y);
+    return v;
+}
+
+inline Vec3 vec3cross(Vec3 a, Vec3 b)
+{
+    Vec3 ab;
+    ab.x = a.y*b.z - a.z*b.y; 
+    ab.y = a.z*b.x - a.x*b.z; 
+    ab.z = a.x*b.y - a.y*b.x; 
+
+    return ab;
+}
+
+inline Vec3 vec3fixpCross(Vec3 a, Vec3 b)
+{
+    Vec3 ab;
+    ab.x = ((int64_t)a.y*b.z - (int64_t)a.z*b.y) >> FIX_SHIFT; 
+    ab.y = ((int64_t)a.z*b.x - (int64_t)a.x*b.z) >> FIX_SHIFT; 
+    ab.z = ((int64_t)a.x*b.y - (int64_t)a.y*b.x) >> FIX_SHIFT; 
+
+    return ab;
+}
+
+inline int32_t vec3dot(Vec3 a, Vec3 b)
+{
+    return (a.x*b.x) + (a.y*b.y) + (a.z*b.z);
+}
+
+inline fixp vec3fixpDot(Vec3 a, Vec3 b)
+{
+    return (fixp)(((int64_t)a.x*b.x + (int64_t)a.y*b.y + (int64_t)a.z*b.z) >> FIX_SHIFT);
+}
+
 inline int circleCircleIntersect(Vec2 circle0, Vec2 circle1, int32_t r0, int32_t r1)
 {
     return (vec2fixpDistSquare(circle0, circle1) < square(r0)+square(r1)) ? DO_INTERSECT : DONT_INTERSECT;
@@ -336,5 +356,6 @@ inline int circleCircleIntersectSq(Vec2 circle0, Vec2 circle1, int32_t r0_square
 {
     return (vec2distSquare(circle0, circle1) < r0_squared+r1_squared) ? DO_INTERSECT : DONT_INTERSECT;
 }
+
 
 #endif/* MATHS2_H */

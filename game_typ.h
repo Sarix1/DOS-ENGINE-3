@@ -15,12 +15,15 @@ typedef struct
     brad last_angle;
     brad angvel;
     fixp radius;
+    fixp bbox_w;
+    fixp bbox_h;
     control_t control;
     //gfx
     Poly_t* poly;
     Poly_t tPoly;
     fixp scale;
     byte color;
+    byte color2;
 } Object_t;
 
 typedef struct

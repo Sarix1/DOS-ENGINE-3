@@ -39,7 +39,7 @@ void moveObject(Object_t* obj)
     obj->pos.x += obj->vel.x;
     obj->pos.y += obj->vel.y;
     obj->angle += obj->angvel;
-    obj->dir = vec2unit(obj->angle);
+    obj->dir = newVec2_angle(obj->angle);
 
     if (obj->pos.x-obj->radius > F(SCREEN_WIDTH))
         obj->pos.x = -obj->radius;
@@ -65,43 +65,60 @@ void polyCircleIntersect(Vec2 circle, fixp radius, Poly_t* poly, int num_points)
     Vec2 b = poly->points[1];
 }
 
+int intersectAABB(Vec2 p0, int32_t w0_half, int32_t h0_half,
+                 Vec2 p1, int32_t w1_half, int32_t h1_half)
+{
+    if  (p0.x+w0_half < p1.x-w1_half || p0.x-w0_half > p1.x+w1_half)
+        return DONT_INTERSECT;
+    if  (p0.y+h0_half < p1.y-h1_half || p0.y-h0_half > p1.y+h1_half)
+        return DONT_INTERSECT;
+    return DO_INTERSECT;
+}
+
 // p == center origins of bounding boxes
 // dir == alignments of bounding boxes
 // w == HALF widths of bounding boxes ("horizontal radius")
 // h == HALF heights of bounding boxes ("vertical radius")
-int intersectOBB(Vec2 p0, Vec2 dir0, fixp w0, fixp h0,
-                 Vec2 p1, Vec2 dir1, fixp w1, fixp h1)
+// move to maths.c
+int intersectOBB(Vec2 p0, Vec2 dir0, fixp w0_half, fixp h0_half,
+                 Vec2 p1, Vec2 dir1, fixp w1_half, fixp h1_half)
 {
     Vec2 dist = vec2sub(p1,p0);
-    Vec2 local_x0 = vec2turnLeft(dir0);
+    Vec2 local_x0 = vec2_90left(dir0);
     Vec2 local_y0 = dir0;
-    Vec2 local_x1 = vec2turnLeft(dir1);
+    Vec2 local_x1 = vec2_90left(dir1);
     Vec2 local_y1 = dir1;
-    fixp proj_len, proj_w0, proj_h0, proj_w1, proj_h1;
+    Vec2 v_w, v_h;
+    fixp proj_len, proj_w, proj_h;
 
-    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_x0,dist));
-    proj_w1 = vec2fixpLen(vec2fixpProjOff(p0,local_x0,vec2scale(local_x1, w1)));
-    proj_h1 = vec2fixpLen(vec2fixpProjOff(p0,local_x0,vec2scale(local_y1, h1)));
-    
-    if (proj_len > w0 + proj_w1 + proj_h1)
-        return DONT_INTERSECT;
-    
-    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_y0,dist));
-    proj_w1 = vec2fixpLen(vec2fixpProjOff(p0,local_y0,vec2scale(local_x1, w1)));
-    proj_h1 = vec2fixpLen(vec2fixpProjOff(p0,local_y0,vec2scale(local_y1, h1)));
-    if (proj_len > h0 + proj_w1 + proj_h1)
-        return DONT_INTERSECT;
-    
-    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_x1,dist));
-    proj_w0 = vec2fixpLen(vec2fixpProjOff(p0,local_x1,vec2scale(local_x0, w0)));
-    proj_h0 = vec2fixpLen(vec2fixpProjOff(p0,local_x1,vec2scale(local_y0, h0)));
-    if (proj_len > w1 + proj_w0 + proj_h0)
+    v_w = vec2scale(local_x1, w1_half);
+    v_h = vec2scale(local_y1, h1_half);
+
+    proj_len = abs(vec2fixpDot(local_x0, dist));
+    proj_w  = abs(vec2fixpDot(local_x0,  v_w));
+    proj_h  = abs(vec2fixpDot(local_x0,  v_h));
+    if (proj_len > w0_half + (proj_w+proj_h))
         return DONT_INTERSECT;
 
-    proj_len = vec2fixpLen(vec2fixpProjOff(p0,local_y1,dist));
-    proj_w0 = vec2fixpLen(vec2fixpProjOff(p0,local_y1,vec2scale(local_x0, w0)));
-    proj_h0 = vec2fixpLen(vec2fixpProjOff(p0,local_y1,vec2scale(local_y0, h0)));
-    if (proj_len > h1 + proj_w0 + proj_h0)
+    proj_len = abs(vec2fixpDot(local_y0, dist));
+    proj_w  = abs(vec2fixpDot(local_y0,  v_w));
+    proj_h  = abs(vec2fixpDot(local_y0,  v_h));
+    if (proj_len > h0_half + (proj_w+proj_h))
+        return DONT_INTERSECT;
+
+    v_w = vec2scale(local_x0, w0_half);
+    v_h = vec2scale(local_y0, h0_half);
+
+    proj_len = abs(vec2fixpDot(local_x1, dist));
+    proj_w  = abs(vec2fixpDot(local_x1,  v_w));
+    proj_h  = abs(vec2fixpDot(local_x1,  v_h));
+    if (proj_len > w1_half + (proj_w+proj_h))
+        return DONT_INTERSECT;
+
+    proj_len = abs(vec2fixpDot(local_y1, dist));
+    proj_w  = abs(vec2fixpDot(local_y1,  v_w));
+    proj_h  = abs(vec2fixpDot(local_y1,  v_h));
+    if (proj_len > h1_half + (proj_w+proj_h))
         return DONT_INTERSECT;
 
     return DO_INTERSECT;
@@ -109,20 +126,47 @@ int intersectOBB(Vec2 p0, Vec2 dir0, fixp w0, fixp h0,
 
 int intersectAll()
 {
-    int intersect = 0;
-    int i = 1;
-    while (i < g_Game.object_count)
+    int i;
+    int any_intersect = DONT_INTERSECT;
+
+    for (i = 1; i < g_Game.object_count; i++)
     {
-        intersect |= intersectOBB
-        (
-            PLAYER_OBJ->pos,           PLAYER_OBJ->dir,
-            PLAYER_OBJ->radius,        PLAYER_OBJ->radius,
-            g_Game.Objects[i].pos,     g_Game.Objects[i].dir,
-            g_Game.Objects[i].radius,  g_Game.Objects[i].radius
-        );
-        i++;
+        int intersect = DONT_INTERSECT;
+
+        if (intersectAABB(
+            PLAYER_OBJ->pos,
+            PLAYER_OBJ->radius,
+            PLAYER_OBJ->radius,
+            g_Game.Objects[i].pos,
+            g_Game.Objects[i].radius,
+            g_Game.Objects[i].radius)
+            == DO_INTERSECT)
+        {
+            intersect = intersectOBB
+            (
+                PLAYER_OBJ->pos,
+                PLAYER_OBJ->dir,
+                PLAYER_OBJ->bbox_w,
+                PLAYER_OBJ->bbox_h,
+                g_Game.Objects[i].pos,
+                g_Game.Objects[i].dir,
+                g_Game.Objects[i].bbox_w,
+                g_Game.Objects[i].bbox_h
+            );
+            any_intersect |= intersect;
+        }
+
+        if (intersect)      
+            g_Game.Objects[i].color2 = COLOR_RED;
+        else
+            g_Game.Objects[i].color2 = COLOR_HITBOX;
     }
-    return intersect;
+    if (any_intersect)
+        PLAYER_OBJ->color2 = COLOR_RED;
+    else
+        PLAYER_OBJ->color2 = COLOR_HITBOX;
+
+    return any_intersect;
 }
 
 void physics()
@@ -131,11 +175,5 @@ void physics()
     PLAYER_OBJ->control = player_control; // ^ should be in a "logic" loop that  comes before physics, and includes AI, game logic, etc.
     controlObject(PLAYER_OBJ);
     moveAllObjects();
-
-
-
-    if (intersectAll() == DO_INTERSECT)
-        PLAYER_OBJ->color = COLOR_RED;
-    else
-        PLAYER_OBJ->color = COLOR_BLUE;
+    intersectAll();
 }

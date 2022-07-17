@@ -4,7 +4,7 @@
 #define DEBUG_INFO      1
 #define DEBUG_ASSERT    1
 #define DEBUG_SYSTEM    1
-#define DEBUG_HITBOX    0
+#define DEBUG_HITBOX    1
 #define ASPECT          1
 
 #include "watcom.h"
@@ -14,6 +14,7 @@
 #include "macro.h"
 #include "types.h"
 #include "vid_def.h"
+#include "math_def.h"
 
 #if DEBUG_INFO == 1
 #include "debug.h"

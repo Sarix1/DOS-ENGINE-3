@@ -6,6 +6,7 @@
 #include "video.h"
 #include "draw_def.h"
 #include "draw_typ.h"
+#include "maths2.h"
 
 inline byte getPixel(int x, int y)
 {
@@ -92,11 +93,24 @@ void drawRectFill       (int x, int y, int w, int h, byte color);
 void drawRectFill_fast  (int x, int y, int w, int h, byte color);
 void drawRectFrame      (int x, int y, int w, int h, byte color);
 void drawRectFrame_fast (int x, int y, int w, int h, byte color);
+
+void drawRectFrameRotated_v(Vec2 origin, int w, int h, Vec2 dir, byte color);
+
 void drawCircleFill     (int x, int y, int diameter, byte color);
 void drawCircleFrame    (int x, int y, int diameter, byte color);
 
 void drawShape          (Vec2 pos, Vec2* points, int num_points, byte color);
 void drawFixpShape      (Vec2 pos, Vec2* points, int num_points, byte color);
 void drawShapeAspect    (Vec2 pos, Vec2* points, int num_points, byte color);
+
+inline void drawRectFrameCenter(int x, int y, int w, int h, byte color)
+{
+    drawRectFrame(x-(w>>1),y-(h>>1),w,h,color);
+}
+
+void drawRectFrameRotated(Vec2 origin, int w, int h, brad angle, byte color)
+{
+    drawRectFrameRotated_v(origin, w, h, newVec2_angle(angle), color);
+}
 
 #endif/* DRAW_H */

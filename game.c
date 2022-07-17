@@ -18,12 +18,12 @@ int initGame()
     g_Game.Objects = (Object_t*)malloc(g_Game.object_capacity * sizeof(Object_t));
     g_Game.ObjectsById = (Object_t**)calloc(g_Game.id_capacity, sizeof(void*));
 
-    g_Game.player_id = spawnShip(vec2i(SCREEN_WIDTH/2, A(SCREEN_HEIGHT/2)), DEG_90);
+    g_Game.player_id = spawnShip(newVec2_I2F(SCREEN_WIDTH/2, A(SCREEN_HEIGHT/2)), DEG_90);
 
-    createObject(vec2i(50, 50),  vec2i(1,2),   vec2unit(0), DEG_5, F(15), F(1), getPoly(1), COLOR_ASTEROID);
-    createObject(vec2i(300,150), vec2i(2,-1),  vec2unit(0), -DEG_3, F(15), F(1), getPoly(1), COLOR_ASTEROID);
-    createObject(vec2i(100,180), vec2i(-1,-2), vec2unit(0), DEG_9, F(15), F(1), getPoly(1), COLOR_ASTEROID);
-    createObject(vec2i(200,80),  vec2i(2,-1),  vec2unit(0), -DEG_2, F(15), F(1), getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(50, 50),  newVec2(F(0.5),F(0.2)),   newVec2_angle(0), DEG_5, F(15),F(15), F(15), F(1), getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(300,150), newVec2(2,-1),  newVec2_angle(0), -DEG_3, F(22),F(15), F(15), F(1), getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(100,180), newVec2(-1,-2), newVec2_angle(0), DEG_9, F(22),F(15), F(15), F(1), getPoly(1), COLOR_ASTEROID);
+    createObject(newVec2_I2F(200,80),  newVec2(2,-1),  newVec2_angle(0), -DEG_2, F(22),F(15), F(15), F(1), getPoly(1), COLOR_ASTEROID);
 
     return SUCCESS;
 }
@@ -71,7 +71,8 @@ static id_t getNewId()
 }
 
 id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
-                  fixp radius, fixp scale, Poly_t* poly,  byte color)
+                  fixp radius, fixp bbox_w, fixp bbox_h,
+                  fixp scale, Poly_t* poly,  byte color)
 {
     Object_t* obj;
     id_t id = getNewId();
@@ -90,11 +91,14 @@ id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
     obj->angle = vec2angle(dir);
     obj->angvel = angvel;
     obj->radius = radius;
+    obj->bbox_w = bbox_w;
+    obj->bbox_h = bbox_h;
     obj->poly = poly;
     memcpy(obj->tPoly.points, poly->points, poly->num_points*sizeof(Vec2));
     obj->tPoly.num_points = obj->poly->num_points;
     obj->scale = scale;
     obj->color = color;
+    obj->color2 = COLOR_HITBOX;
 
     return id;
 }
@@ -122,5 +126,5 @@ void deleteLastObject()
 
 id_t spawnShip(Vec2 pos, brad angle)
 {
-    return createObject(pos, vec2i(0,0), vec2unit(0), 0, F(10), F(1), getPoly(POLY_SHIP), COLOR_SHIP);
+    return createObject(pos, newVec2_I2F(0,0), newVec2_angle(0), 0, F(32), F(8), F(30), F(1), getPoly(POLY_SHIP), COLOR_SHIP);
 }

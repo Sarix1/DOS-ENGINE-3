@@ -10,5 +10,5 @@ void cmdSpawn(Event_t cmd) // this should go to game.c and only be declared, not
     // for now we lack different types and a generic spawn function
     // instead, just spawn a ship
 
-    spawnShip(vec2i(cmd.event.params.pos.x, cmd.event.params.pos.y), 0);
+    spawnShip(newVec2_I2F(cmd.event.params.pos.x, cmd.event.params.pos.y), 0);
 }

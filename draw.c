@@ -229,8 +229,8 @@ void drawLine_fast(Vec2 p0, Vec2 p1, byte color)
 
 void drawLineFixp(Vec2 p0, Vec2 p1, byte color)
 {
-    p0 = vec2fixpToInt(p0);
-    p1 = vec2fixpToInt(p1);
+    p0 = vec2_F2I(p0);
+    p1 = vec2_F2I(p1);
     //printf("%ld %ld\n", p0.x, p0.y);
 
     if (clipLineToScreen(&p0, &p1) == DO_INTERSECT)
@@ -246,8 +246,8 @@ void drawLineFixp(Vec2 p0, Vec2 p1, byte color)
 
 void drawLineFixp_fast(Vec2 p0, Vec2 p1, byte color)
 {
-    p0 = vec2fixpToInt(p0);
-    p1 = vec2fixpToInt(p1);
+    p0 = vec2_F2I(p0);
+    p1 = vec2_F2I(p1);
 
     if (p0.x == p1.x)
         drawLineVert2(p0.x, p0.y, (p1.y-p0.y), color);
@@ -299,53 +299,29 @@ void drawRectFill(int x, int y, int w, int h, byte color)
 
 void drawRectFrame(int x0, int y0, int w, int h, byte color)
 {
-    byte sides = 0x0F;
-    byte far* pix;
-    int x1, y1, i;
-
-    if (x0 >= SCREEN_WIDTH || y0 >= SCREEN_HEIGHT || (x1=x0+w) < 0 || (y1=y0+h) < 0)
+    byte sides = 0x0F;  byte far* pix;  int x1, y1, i;
+    if ( x0 >= SCREEN_WIDTH || y0 >= SCREEN_HEIGHT
+        || (x1=x0+w) < 0    || (y1=y0+h) < 0 )
         return;
 
-    if (x0 < 0)
-    {
-        sides &= ~OUTCODE_LEFT;
-        x0 = 0;
-    }
-    if (x1 > SCREEN_WIDTH)
-    {
-        sides &= ~OUTCODE_RIGHT;
-        x1 = SCREEN_WIDTH;
-    }
-    if (y0 < 0)
-    {
-        sides &= ~OUTCODE_TOP;
-        y0 = 0;
-    }
-    if (y1 > SCREEN_HEIGHT)
-    {
-        sides &= ~OUTCODE_BOTTOM;
-        y1 = SCREEN_HEIGHT;
-    }
-
-    if (!sides) // if sides are in orbit, die
+    if (x0 < 0)             { sides &= ~OUTCODE_LEFT;   x0 = 0;             }
+    if (x1 > SCREEN_WIDTH)  { sides &= ~OUTCODE_RIGHT;  x1 = SCREEN_WIDTH;  }
+    if (y0 < 0)             { sides &= ~OUTCODE_TOP;    y0 = 0;             }
+    if (y1 > SCREEN_HEIGHT) { sides &= ~OUTCODE_BOTTOM; y1 = SCREEN_HEIGHT; }
+    if (!sides) // if sides are in orbit, you must die
         return;
 
     pix = g_Video.surface + Y_OFFSET(y0) + x0;
     w = x1-x0;
     h = y1-y0;
-    
-    if (sides & OUTCODE_TOP)
-        _fmemset(pix, color, w);
-    if (sides & OUTCODE_BOTTOM)
-        _fmemset(pix+Y_OFFSET(h), color, w);
-
+    if (sides & OUTCODE_TOP)    _fmemset(pix,               color, w);
+    if (sides & OUTCODE_BOTTOM) _fmemset(pix+Y_OFFSET(h-1), color, w);
     if (sides & OUTCODE_LEFT)
     {
         if (sides & OUTCODE_RIGHT)
         {
             byte far* pix2 = pix + w-1;
-            for (i=0; i < h-2; i++)
-            {
+            for (i=0; i < h-2; i++) {
                 pix += SCREEN_WIDTH;
                 pix2 += SCREEN_WIDTH;
                 *pix2 = *pix = color;
@@ -353,8 +329,7 @@ void drawRectFrame(int x0, int y0, int w, int h, byte color)
         }
         else
         {
-            for (i=0; i < h-2; i++)
-            {
+            for (i=0; i < h-2; i++) {
                 pix += SCREEN_WIDTH;
                 *pix = color;
             }
@@ -363,8 +338,7 @@ void drawRectFrame(int x0, int y0, int w, int h, byte color)
     else if (sides & OUTCODE_RIGHT)
     {
         pix += w-1;
-        for (i=0; i < h-2; i++)
-        {
+        for (i=0; i < h-2; i++) {
             pix += SCREEN_WIDTH;
             *pix = color;
         }
@@ -391,14 +365,35 @@ void drawRectFrame_fast(int x, int y, int w, int h, byte color)
     }
 }
 
+void drawRectFrameRotated_v(Vec2 origin, int w, int h, Vec2 dir, byte color)
+{
+
+    Vec2 vw = vec2_F2I(vec2scale(dir,              toFixp(w)));
+    Vec2 vh = vec2_F2I(vec2scale(vec2_90left(dir), toFixp(h)));
+    Vec2 p0 = vec2add3(origin, vw,          vh          );
+    Vec2 p1 = vec2add3(origin, vw,          vec2inv(vh) );
+    Vec2 p2 = vec2add3(origin, vec2inv(vw), vec2inv(vh) );
+    Vec2 p3 = vec2add3(origin, vec2inv(vw), vh          );
+
+    p0.y = a(p0.y);
+    p1.y = a(p1.y);
+    p2.y = a(p2.y);
+    p3.y = a(p3.y);
+
+    drawLine(p0,p1,color);
+    drawLine(p1,p2,color);
+    drawLine(p2,p3,color);
+    drawLine(p3,p0,color);
+}
+
 void drawCircleFill(int x, int y, int diameter, byte color)
 {
-    const byte far* center  = g_Video.surface + Y_OFFSET(y) + x;
-    const int radius        = (diameter >> 1) + 1;
-    const int remainder     = diameter & 1;
-    const int r_offset      = Y_OFFSET(remainder^1);
-    const fixp inv_radius    = FIX_ONE / (radius == 0 ? 1 : radius);
-    fixp y_scale_factor      = 0;
+    const byte far* center = g_Video.surface + Y_OFFSET(y) + x;
+    const int radius       = (diameter >> 1) + 1;
+    const int remainder    = diameter & 1;
+    const int r_offset     = Y_OFFSET(remainder^1);
+    const fixp inv_radius  = FIX_ONE / (radius == 0 ? 1 : radius);
+    fixp y_scale_factor    = 0;
     // offsets
     int dx = radius-1;
     int dy = 0;

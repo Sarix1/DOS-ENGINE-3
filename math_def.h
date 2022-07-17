@@ -1,5 +1,5 @@
-#ifndef MATH_DEFS_H
-#define MATH_DEFS_H
+#ifndef MATH_DEF_H
+#define MATH_DEF_H
 
 #include "common.h"
 
@@ -75,14 +75,18 @@
 #define FIX_FRAC_MASK           ((1L<<FIX_SHIFT)-1)
 #define FIX_WHOLE_MASK          ~((1L<<FIX_SHIFT)-1)
 
-#define F(x)                    ((fixp)(x)<<FIX_SHIFT)
+#define F(x)                    ((fixp)(x)*FIX_ONE)
 
 #if ASPECT == 1
 #define A(x) (((x)*6)/5)
 #define a(x) (((x)*5)/6)
+#define av2(v) vec2aspect(v)
+#define AV2(v) vec2Aspect(v)
 #else
 #define A(x) (x)
 #define a(x) (x)
-#endif
+#define av2(v) (v)
+#define AV2(v) (v)
+#endif/* MATH_DEF_H */
 
 #endif/* MATH_DEFS_H */

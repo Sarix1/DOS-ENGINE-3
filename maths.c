@@ -277,37 +277,6 @@ Vec2 vec2projOff(Vec2 offset, Vec2 v, Vec2 u)
     return p;
 }
 
-// project u onto v
-// check: does this return the same thing as vec2proj?
-Vec2 vec2fixpProj(Vec2 v, Vec2 u)
-{
-    Vec2 p;
-    const int64_t num = ((int64_t)u.x*v.x + (int64_t)u.y*v.y) >> FIX_SHIFT;
-    const int64_t denom = ((int64_t)v.x*v.x + (int64_t)v.y*v.y) >> FIX_SHIFT;
-
-    p.x = (v.x*num)/denom;
-    p.y = (v.y*num)/denom;
-
-    return p;
-}
-
-// project u onto v
-Vec2 vec2fixpProjOff(Vec2 offset, Vec2 v, Vec2 u)
-{
-    Vec2 p;
-    const int64_t vx = v.x - offset.x;
-    const int64_t vy = v.y - offset.y;
-    const int64_t ux = u.x - offset.x;
-    const int64_t uy = u.y - offset.y;
-    const int64_t num = (ux*vx + uy*vy) >> FIX_SHIFT;
-    const int64_t denom = (vx*vx + vy*vy) >> FIX_SHIFT;
-    
-    p.x = (vx*num)/denom + offset.x;
-    p.y = (vy*num)/denom + offset.y;
-
-    return p;
-}
-
 int intersectLineLine(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2* intersect)
 {
     const int64_t a1 = p1.y-p0.y;
