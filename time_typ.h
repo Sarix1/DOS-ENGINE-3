@@ -21,12 +21,14 @@ typedef struct
     time_t last_tick;       // last time game logic ticked ; not used anymore
     time_t last_frame;      // last time a frame was began to be drawn
     time_t last_cycle;      // last time the main loop began iterating
+    time_t last_clock_time; // last time the PC clock interrupt was fired
 
     time_t tick_accumulator; // Incremented by cycle duration, decremented by tick_interval
     time_t fps_count;        // Counts frames in a second so far, for FPS calculation
 
-    int fps;      // actual measured fps
-    fixp fps_avg; // average fps (frames/seconds)
+    int fps;            // actual measured fps
+    int fps_last10[11]; // to calculate average fps
+    fixp fps_avg;       // average fps (frames in 10 seconds)
 
 } Timer_t;
 

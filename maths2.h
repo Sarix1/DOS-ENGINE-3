@@ -32,7 +32,7 @@ inline int32_t toInt(fixp i)
     return (i >> FIXP_SHIFT);
 }
 
-inline fixp toFixp(int i)
+inline fixp toFixp(int32_t i)
 {
     return ((fixp)i << FIXP_SHIFT);
 }
@@ -68,13 +68,15 @@ inline fixp fixpSinAcos_slow(fixp x)
 }
 
 // for printing out fractional part of fixp value
-inline int fixpFracToDec(fixp x)
+inline uint16_t fixpFracToDecimal(fixp x)
 {
-    return (int)(((int64_t)(x & FIXP_FRAC_MASK)*1000L)/FIXP_ONE);
+    x &= FIXP_FRAC_MASK;
+
+    return (uint16_t)x;
 }
 
 // for printing out whole part of fixp value
-inline int fixpWholeToDec(fixp x)
+inline int16_t fixpWholeToDecimal(fixp x)
 {
     return (int)(x >> FIXP_SHIFT);
 }
@@ -83,7 +85,7 @@ inline int fixpWholeToDec(fixp x)
 char* fixpStr(fixp x)
 {
     static char str[16];
-    sprintf(str, "%d.%d", fixpWholeToDec(x), fixpFracToDec(x));
+    sprintf(str, "%d.%02u", fixpWholeToDecimal(x), fixpFracToDecimal(x));
 
     return str;
 }
@@ -91,13 +93,13 @@ char* fixpStr(fixp x)
 inline Vec2 newVec2(fixp x, fixp y)
 {
     Vec2 v;
-    v.y = x;
+    v.x = x;
     v.y = y;
 
     return v;
 }
 
-inline Vec2 newVec2_I2F(int x, int y)
+inline Vec2 newVec2_I2F(int32_t x, int32_t y)
 {
     Vec2 v;
     v.x = ((fixp)x)<<FIXP_SHIFT;

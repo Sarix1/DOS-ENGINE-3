@@ -10,28 +10,32 @@ static void interrupt (far* old_Timer)(void) = NULL;
 
 static void interrupt far Timer(void)
 {
-    static time_t last_clock_time = 0;
-    //static time_t last_second;
-
     ++g_Timer.time;
 
     // keeps the PC clock ticking in the background
     // 1000ms/18.2hz = ~55ms
-    if (last_clock_time + g_Timer.clock_interval < g_Timer.time)
+    if (g_Timer.last_clock_time + g_Timer.clock_interval < g_Timer.time)
     {
-        last_clock_time = g_Timer.time;
+        g_Timer.last_clock_time = g_Timer.time;
         old_Timer();
     }
 
     if (g_Timer.last_sec + CLOCK_RATE < g_Timer.time)
     {
+        static int sec_index = 0;
+        static int avg_fps_accumulator = 0;
+
         g_Timer.last_sec += CLOCK_RATE;
         g_Timer.seconds++;
 
         // FPS calculation; optional for debugging
-        g_Timer.fps_avg = toFixp(g_Timer.frames) / (g_Timer.seconds);
         g_Timer.fps = g_Timer.fps_count;
         g_Timer.fps_count = 0;
+        g_Timer.fps_last10[sec_index++] = g_Timer.fps;
+        if (sec_index == 11) sec_index = 0;
+        avg_fps_accumulator += g_Timer.fps;
+        avg_fps_accumulator -= g_Timer.fps_last10[sec_index];
+        g_Timer.fps_avg = toFixp(avg_fps_accumulator)/10;
     }
 }
 

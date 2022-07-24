@@ -33,9 +33,9 @@ int initGame()
     createObject(newVec2_I2F(100,180), newVec2(-FIXP_050, FIXP_1_4), newVec2_angle(0),  DEG_9, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
     createObject(newVec2_I2F(200,80),  newVec2( FIXP_015, FIXP_1_5), newVec2_angle(0), -DEG_2, F(22), F(15), F(15), FIXP_1, getPoly(1), COLOR_ASTEROID);
 
-    g_Game.Objects[1].vel.x = F(-1);
-    g_Game.Objects[2].vel.x = F(1);
-    g_Game.Objects[3].vel.x = F(2);
+    //g_Game.Objects[1].vel.x = F(-1);
+    //g_Game.Objects[2].vel.x = F(1);
+    //g_Game.Objects[3].vel.x = F(2);
 
     return SUCCESS;
 }
