@@ -267,7 +267,7 @@
 #define FIXP_10   (FIXP_ONE*10)
 
 // use for constants, not for code math
-#define F(x)                    (fixp)((x)*FIXP_ONE)
+#define F(x) ((x)*FIXP_ONE)
 
 #if ASPECT == 1
 #define A(x) (((x)*6)/5)
