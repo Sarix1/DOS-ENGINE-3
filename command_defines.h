@@ -6,9 +6,10 @@
 #include "action_defines.h"
 
 #define FOR_EACH_COMMAND(DO) \
-    DO(CMD_QUIT,        "quit",         cmdQuit) \
-    DO(CMD_START_GAME,  "start_game",   cmdStartGame) \
-    DO(CMD_SPAWN,       "spawn",        cmdSpawn) \
+    DO(CMD_QUIT,            "quit",             cmdQuit) \
+    DO(CMD_START_GAME,      "start_game",       cmdStartGame) \
+    DO(CMD_SPAWN,           "spawn",            cmdSpawn) \
+    DO(CMD_ACTION_DELAY,    "action_delay",     cmdSetActionDelay) \
 
 #define DEF_COMMAND_ENUM(cmd, unused1, unused2) cmd,
 enum COMMANDS

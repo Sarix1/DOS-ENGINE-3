@@ -21,27 +21,29 @@ static Action_t** last_action = &LocalActionQueue.last;
 
 static void pushAction(Action_t action)
 {
-    if (action.controldata == LocalActionQueue.last->controldata)
-    {
-        print(DEFAULT, "Identical action\n");
-        return;
-    }
+    print(DEFAULT, "Last action tick: %ld\n", (*last_action)->tick);
     
-    if (action.tick == LocalActionQueue.last->tick)
+    if (action.controldata == (*last_action)->controldata)
+        return;
+    
+    if (action.tick == (*last_action)->tick)
     {
         print(DEFAULT, "Same tick\n");
         *LocalActionQueue.last = action;
+
         return;
     }
 
     *LocalActionQueue.write = action;
+    LocalActionQueue.last = LocalActionQueue.write;
     ptrIncAndWrap(LocalActionQueue.write,
                   LocalActionQueue.start,
                   LocalActionQueue.end);
-    if (LocalActionQueue.write == LocalActionQueue.read) // it is a very bad thing if this happens
-        ptrIncAndWrap(LocalActionQueue.read, // this should NEVER happen
-                      LocalActionQueue.start,
-                      LocalActionQueue.end); 
+
+    if (LocalActionQueue.write == LocalActionQueue.read) // this should NEVER happen, it means
+        ptrIncAndWrap(LocalActionQueue.read, //  that more actions were generated than the game
+                      LocalActionQueue.start, // was able to process, so older actions _DISAPPEAR_
+                      LocalActionQueue.end);  // without being processed at all
 }
 
 int generateAction(action_id_t action_id, byte state, time_t tick)
@@ -49,13 +51,10 @@ int generateAction(action_id_t action_id, byte state, time_t tick)
     Action_t action;
     controldata_t control_bit = BIT(action_id-1);
     
-    action.tick = tick+ACTION_DELAY;
-    action.controldata = state ?
-        ((*last_action)->controldata | control_bit) :
-        ((*last_action)->controldata & ~control_bit);
-
-    if (state == 1) print(DEFAULT, "KeyHit\n"); // temp debug
-    else print(DEFAULT, "KeyReleased\n"); // temp debug
+    action.tick = tick + g_Timer.action_delay;
+    action.controldata = (state == 0) ?
+        ((*last_action)->controldata & ~control_bit) :
+        ((*last_action)->controldata | control_bit);
 
     pushAction(action);
 }
@@ -63,31 +62,17 @@ int generateAction(action_id_t action_id, byte state, time_t tick)
 // updates a player's controldata
 void processActions()//(id_t player_id)
 {
-    while (1)
+    while (LocalActionQueue.read != LocalActionQueue.write)
     {
-        // more than 1 action queued
-        if (LocalActionQueue.read != LocalActionQueue.last)
-        {
-            if (LocalActionQueue.read->tick <= g_Timer.tick_simulated)
-            {
-                local_controldata = LocalActionQueue.read->controldata;
-                ptrIncAndWrap(LocalActionQueue.write,
-                            LocalActionQueue.start,
-                            LocalActionQueue.end);
-                continue;
-            }
-            // simulated ticks caught up with real ticks; return
-            else
-                return;
-        }
-        // only 1 tick queued; if in past or present, fetch data and return
-        else if (LocalActionQueue.read->tick <= g_Timer.tick_simulated)
+        if (LocalActionQueue.read->tick <= g_Timer.tick_simulated)
         {
             local_controldata = LocalActionQueue.read->controldata;
-            return;
+            ptrIncAndWrap(LocalActionQueue.read,
+                          LocalActionQueue.start,
+                          LocalActionQueue.end);
+            continue;
         }
-        // the tick is in the future; return
         else
-            return;
+            break;
     }
 }

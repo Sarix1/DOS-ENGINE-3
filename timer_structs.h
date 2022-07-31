@@ -23,6 +23,8 @@ typedef struct
     time_t fps_count;       // Counts frames in a second so far, for FPS calculation
     int ticks_per_frame;    // ticks processed before current frame
     int tick_rate;          // target tick rate (constant value)
+    int action_delay;       // number of ticks to delay player actions by
+
     int frame_rate;         // target frame rate (constant value)
     int fps;                // actual measured fps
     int fps_last10[11];     // fps backlog to calculate average fps // make this work in a fucking sensible way please

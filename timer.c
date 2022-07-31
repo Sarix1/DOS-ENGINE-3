@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <dos.h>
 #include "_common.h"
+
 #include "timer.h"
+#include "action_defines.h"
 #include "math_fixp_inline.h"
 
 Timer_t g_Timer = {0};
@@ -72,12 +74,13 @@ int initTimer()
 
     g_Timer.time            = 0;
     g_Timer.seconds         = 0;
-    g_Timer.tick_real = 0;
+    g_Timer.tick_real       = 0;
     g_Timer.tick_simulated  = 0;
     g_Timer.frames          = 0;
 
     g_Timer.tick_rate       = TICK_RATE;
     g_Timer.frame_rate      = FRAME_RATE;
+    g_Timer.action_delay    = ACTION_DELAY;
 
     g_Timer.tick_interval   = CLOCK_RATE/TICK_RATE;
     g_Timer.frame_interval  = CLOCK_RATE/FRAME_RATE;

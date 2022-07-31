@@ -2,6 +2,8 @@
 #define TXT_LOG_H
 
 #include "_common.h"
+//#include "_string.h"
+
 #include "text_structs.h"
 #include "input_structs.h"
 #include <stdarg.h>
@@ -10,7 +12,6 @@
 
 extern char far format_buffer[FORMAT_BUFFER_SIZE];
 
-int  strcmptok          (char* str, char* token, char delim);
 void initRingBuf        (RingBuf_t* buf, byte* str, size_t size);
 
 void   logPruneLine     (Log_t* log);

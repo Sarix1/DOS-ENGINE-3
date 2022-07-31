@@ -1,38 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "_common.h"
+#include "_malloc.h"
+
 #include "text_input.h"
 #include "text_defines.h"
 #include "text_structs.h"
 #include "input.h"
-#include "_malloc.h"
+
 
 char far format_buffer[FORMAT_BUFFER_SIZE] = {0};
-
-int strcmptok(char* str, char* token, char delim)
-{
-    int index = 0; // position in str
-    // skip delimeter character(s) in the beginning
-    while (*str == delim)
-    {
-        str++;
-        index++;
-    }
-    // compare str and token
-    while (*str == *token)
-    {
-        // end of token reached and strings were identical;
-        // return index in str where the token string ends (final character+1)
-        if (*token == '\0')
-            return index;
-
-        str++;
-        token++;
-        index++;
-    }
-    // when the strings diverge, return -1 (token not found)
-    return -1;
-}
 
 void initRingBuf(RingBuf_t* buf, byte* str, size_t size)
 {

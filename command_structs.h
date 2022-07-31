@@ -21,7 +21,7 @@ typedef union
 
 typedef union
 {
-    struct { id_t id; time_t tick; Params_t params; } event;
+    struct { id_t id; time_t tick; Params_t params; } data;
     BigParams_t big_params;
 } Command_t;
 

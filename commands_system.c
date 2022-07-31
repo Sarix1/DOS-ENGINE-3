@@ -17,6 +17,6 @@ void cmdStartGame(Command_t cmd)
 /*
 void cmdGoto(Command_t cmd)
 {
-    pushState(cmd.event.params.state.id);
+    pushState(cmd.data.params.state.id);
 }
 */

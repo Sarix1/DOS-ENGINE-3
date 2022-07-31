@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-
 #include "_common.h"
+
 #include "console.h"
 #include "command.h"
+#include "input.h"
+#include "state.h"
 
 #include "text_defines.h"
 #include "text_input.h"
-#include "input.h"
-#include "state.h"
 #include "text_output.h"
+
+#include "gfx_draw_text.h"
 
 static byte far console_input_buffer[CONSOLE_INPUT_SIZE] = {0};
 static byte far console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
@@ -77,38 +79,6 @@ void consoleEsc()
     removeState(STATE_CONSOLE);
 }
 
-Params_t getCommandToken(char* str, int len)
-{
-    Params_t info;
-    id_t cmd_id;
-
-    for (cmd_id = 0; cmd_id < NUM_COMMANDS; cmd_id++)
-    {
-        if ((info.cmd.str_offset = strcmptok(str, command_strings[cmd_id], ' ')) != -1)
-        {
-            info.cmd.id = cmd_id;
-            return info;
-        }
-    }
-
-    info.cmd.id = CMD_NONE;
-    return info;
-}
-
-Params_t getCommandArgs(id_t cmd_id, char* arg_str)
-{
-    Params_t args = {0};
-
-    switch (cmd_id)
-    {
-    case CMD_SPAWN:
-        sscanf(arg_str, "%d %d %d", &args.pos.x, &args.pos.y, &args.pos.var.angle);
-        break;
-    }
-
-    return args;
-}
-
 // receives a va_list; use like fprintf
 void v_consoleWrite_f(byte color, byte* format, va_list args)
 {
@@ -129,13 +99,10 @@ void consoleWrite_f(byte color, byte* format, ...)
 
 void consoleInput(TextInput_t* input)
 {
-    Command_t cmd;
-    Params_t info = getCommandToken(input->buffer, input->length);
+    Command_t cmd = parseCommand(input->buffer, input->length);
 
-    if (info.cmd.id != CMD_NONE)
+    if (cmd.data.id != CMD_NONE)
     {
-        cmd.event.id = info.cmd.id;
-        cmd.event.params = getCommandArgs(info.cmd.id, input->buffer + info.cmd.str_offset);
         execCommand(cmd);
         print(COLOR_LOG_TEXT, "%s\n", input->buffer);
     }
@@ -144,8 +111,6 @@ void consoleInput(TextInput_t* input)
     
     resetInput(input);
 }
-
-#include "gfx_draw_text.h"
 
 void consoleDraw()
 {
