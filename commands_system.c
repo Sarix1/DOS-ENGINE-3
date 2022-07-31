@@ -3,19 +3,19 @@
 #include "system.h"
 #include "state.h"
 
-void cmdQuit(CommandEvent_t cmd)
+void cmdQuit(Command_t cmd)
 {
     quit();
 }
 
-void cmdStartGame(CommandEvent_t cmd)
+void cmdStartGame(Command_t cmd)
 {
     popState();
     pushState(STATE_GAME);
 }
 
 /*
-void cmdGoto(CommandEvent_t cmd)
+void cmdGoto(Command_t cmd)
 {
     pushState(cmd.event.params.state.id);
 }

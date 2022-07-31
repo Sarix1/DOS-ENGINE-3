@@ -75,8 +75,8 @@ int handleGameControl(InputEvent_t event)
         return HANDLED;
     }
 
-    // otherwise, treat action_id as a command_id indexing an array of CommandEvent_t; fetch a CommandEvent_t
-    // push the CommandEvent_t onto a CommandQueue, which gets executed at the beginning of the update loop
+    // otherwise, treat action_id as a command_id indexing an array of Command_t; fetch a Command_t
+    // push the Command_t onto a CommandQueue, which gets executed at the beginning of the update loop
     // if (bla bla)
     //    generateCommand_orSomething()
     //    return HANDLED;

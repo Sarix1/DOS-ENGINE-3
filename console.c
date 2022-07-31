@@ -129,7 +129,7 @@ void consoleWrite_f(byte color, byte* format, ...)
 
 void consoleInput(TextInput_t* input)
 {
-    CommandEvent_t cmd;
+    Command_t cmd;
     Params_t info = getCommandToken(input->buffer, input->length);
 
     if (info.cmd.id != CMD_NONE)

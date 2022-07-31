@@ -23,8 +23,8 @@ typedef union
 {
     struct { id_t id; time_t tick; Params_t params; } event;
     BigParams_t big_params;
-} CommandEvent_t;
+} Command_t;
 
-typedef void (*fnp_cmd)(CommandEvent_t cmd);
+typedef void (*fnp_cmd)(Command_t cmd);
 
 #endif/* CMD_TYP_H */

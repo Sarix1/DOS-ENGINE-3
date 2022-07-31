@@ -3,7 +3,7 @@
 
 #include "_common.h"
 
-void cmdQuit(CommandEvent_t cmd);
-void cmdStartGame(CommandEvent_t cmd);
+void cmdQuit(Command_t cmd);
+void cmdStartGame(Command_t cmd);
 
 #endif/* CMD_SYS_H */

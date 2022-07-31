@@ -3,7 +3,7 @@
 #include "game.h"
 #include "math_fixp_inline.h"
 
-void cmdSpawn(CommandEvent_t cmd) // this should go to game.c and only be declared, not defined here
+void cmdSpawn(Command_t cmd) // this should go to game.c and only be declared, not defined here
 {
     // id_t object_type = cmd.params.type;
 

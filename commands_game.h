@@ -3,6 +3,6 @@
 
 #include "_common.h"
 
-void cmdSpawn(CommandEvent_t cmd);
+void cmdSpawn(Command_t cmd);
 
 #endif/* CMD_GAME_H */

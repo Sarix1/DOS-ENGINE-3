@@ -19,7 +19,7 @@ fnp_cmd command_functions[NUM_COMMANDS] =
 };
 #undef INSERT_COMMAND_FNP
 
-void execCommand(CommandEvent_t cmd)
+void execCommand(Command_t cmd)
 {
     command_functions[cmd.event.id](cmd);
 }

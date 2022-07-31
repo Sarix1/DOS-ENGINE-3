@@ -21,6 +21,6 @@ enum COMMANDS
 
 extern char far* command_strings[NUM_COMMANDS];
 
-void execCommand(CommandEvent_t cmd);
+void execCommand(Command_t cmd);
 
 #endif/* CMD_DEF_H */
