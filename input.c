@@ -197,9 +197,9 @@ static void handleScanCode(byte scan)
     generateKeyEvent(keycode, keystate);
 }
 
-static void interrupt (far *oldKeyHandler)(void);
+static void interrupt (far *OldKeyHandler_ISR)(void);
 
-static void interrupt keyHandler()
+static void interrupt KeyHandler_ISR()
 {
     while (inportb(0x64) & 1)
         handleScanCode(inportb(0x60));
@@ -211,13 +211,13 @@ static void initKeyHandler()
     byte far *bios_key_state;
     asm cli;
     // save address of current keyhandler interrupt function
-    oldKeyHandler = getvect(KEYHANDLER_INT);
+    OldKeyHandler_ISR = getvect(KEYHANDLER_INT);
     // caps lock & num lock off
     bios_key_state = MK_FP(0x040, 0x017);
     *bios_key_state &= (~(32|64));
-    oldKeyHandler(); 
+    OldKeyHandler_ISR(); 
     // replace old keyhandler with new keyhandler function
-    setvect(KEYHANDLER_INT, keyHandler);
+    setvect(KEYHANDLER_INT, KeyHandler_ISR);
     asm sti;
 }
 
@@ -225,7 +225,7 @@ static void quitKeyHandler()
 {
     // restore old keyhandler
     asm cli;
-    setvect(KEYHANDLER_INT, oldKeyHandler);
+    setvect(KEYHANDLER_INT, OldKeyHandler_ISR);
     asm sti;
 }
 

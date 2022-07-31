@@ -89,6 +89,19 @@ static inline void setTopState(id_t id)
     g_StateMgr.Stack[g_StateMgr.state_count-1] = &States[id];
 }
 
+void moveStateToTop(id_t id)
+{
+    int i = 0;
+    State_t* old = getTopState();
+    old->leave();
+    while (g_StateMgr.Stack[i]->id != id)
+        i++;
+    while (i < g_StateMgr.state_count-1)
+        g_StateMgr.Stack[i] = g_StateMgr.Stack[++i];
+    g_StateMgr.Stack[i] = &States[id];
+    States[id].enter();
+}
+
 void pushState(id_t id)
 {
     if (States[id].flags & STATE_FLAG_ACTIVE)
@@ -96,18 +109,7 @@ void pushState(id_t id)
         if (getTopState()->id == id)
             return;
         else
-        {
-            // if it's not the top state, make it
-            int i = 0;
-            State_t* old = getTopState();
-            old->leave();
-            while (g_StateMgr.Stack[i]->id != id)
-                i++;
-            while (i < g_StateMgr.state_count-1)
-                g_StateMgr.Stack[i] = g_StateMgr.Stack[++i];
-            g_StateMgr.Stack[i] = &States[id];
-            States[id].enter();
-        }
+            moveStateToTop(id);
     }
     else
     {

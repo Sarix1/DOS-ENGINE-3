@@ -6,9 +6,9 @@
 
 Timer_t g_Timer = {0};
 
-static void interrupt (far* old_Timer)(void) = NULL;
+static void interrupt (far* old_Timer_ISR)(void) = NULL;
 
-static void interrupt far Timer(void)
+static void interrupt far Timer_ISR(void)
 {
     ++g_Timer.time;
 
@@ -17,7 +17,7 @@ static void interrupt far Timer(void)
     if (g_Timer.time >= g_Timer.next_clock)
     {
         g_Timer.next_clock += g_Timer.clock_interval;
-        old_Timer();
+        old_Timer_ISR();
     }
 
     if (g_Timer.enable_ticks && g_Timer.time >= g_Timer.next_tick)
@@ -57,7 +57,7 @@ static void setTimer(uint16_t new_count)
 int quitTimer()
 {
     asm cli;
-    setvect(TIME_KEEPER_INT, old_Timer);
+    setvect(TIME_KEEPER_INT, old_Timer_ISR);
     setTimer(TIMER_18HZ);
     asm sti;
 
@@ -92,8 +92,8 @@ int initTimer()
 
     //timer
     asm cli;
-    old_Timer = getvect(TIME_KEEPER_INT);
-    setvect(TIME_KEEPER_INT, &Timer);
+    old_Timer_ISR = getvect(TIME_KEEPER_INT);
+    setvect(TIME_KEEPER_INT, &Timer_ISR);
     setTimer(TIMER_1000HZ);
     asm sti;
 

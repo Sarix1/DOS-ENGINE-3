@@ -9,17 +9,15 @@ extern controldata_t local_controldata; // temp
 
 int main(void)
 {
+    int i;
+
     init();
-    
     pushState(STATE_GAME);
-    //pushState(STATE_CONSOLE);
 
     while (g_System.running)
     {
-        int i;
-
         handleInputEvents();
-        // process tick(s)
+
         while (g_Timer.tick_simulated < g_Timer.tick_real)
         {
             updateStates();
@@ -31,8 +29,6 @@ int main(void)
             else break;
         }
 
-
-        // render frame
         if (g_Timer.time >= g_Timer.next_frame)
         {
             g_Timer.next_frame += g_Timer.frame_interval;

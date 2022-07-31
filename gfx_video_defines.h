@@ -1,5 +1,5 @@
-#ifndef VID_DEF_H
-#define VID_DEF_H
+#ifndef GFX_VIDEO_DEFINES_H
+#define GFX_VIDEO_DEFINES_H
 
 #define VGA             0xA0000000l
 #define CHARSET_ROM     0xF000FA6El
@@ -27,4 +27,4 @@
 #define Y_OFFSET(i) (i*SCREEN_WIDTH)
 #endif
 
-#endif/* VID_DEF_ */
+#endif/* GFX_VIDEO_DEFINES_H */

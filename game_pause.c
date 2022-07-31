@@ -11,7 +11,7 @@ void togglePause()
     }
     else if (getStateFlags(STATE_GAME) & STATE_FLAG_ACTIVE)
     {
-        pushState(STATE_GAME);
+        moveStateToTop(STATE_GAME);
         pushState(STATE_PAUSE);
     }
 }
@@ -28,6 +28,7 @@ int pauseQuit()
 {
     setStateFlags(STATE_GAME, STATE_FLAG_UPDATE);
     g_Timer.enable_ticks = 1;
+    g_Timer.next_tick = g_Timer.time + g_Timer.tick_interval;
 
     return 0;
 }

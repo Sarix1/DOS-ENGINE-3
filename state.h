@@ -8,6 +8,7 @@ extern StateManager_t g_StateMgr;
 
 State_t* getState(id_t id);
 State_t* getTopState();
+void moveStateToTop(id_t id);
 void pushState(id_t new_);
 void popState();
 void removeState(id_t id);

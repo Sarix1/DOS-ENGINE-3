@@ -13,12 +13,13 @@ char debug[NUM_DEBUG][DEBUG_STR_LEN];
 void updateStats()
 {
     sprintf(debug[DEBUG_FPS],
-        "Time: %ld Minutes, %ld Seconds\n"
-        "Ticks (emulated): %ld, Frames: %ld\n"
-        "FPS: %d, Avg. FPS: %s",
+        "Time: %ld mins, %ld secs\n"
+        "Tics(game): %ld, Tics(real): %ld\n"
+        "Frames: %ld, FPS: %d, Avg: %s",
+
         g_Timer.seconds/60, g_Timer.seconds%60,
-        g_Timer.tick_simulated, g_Timer.frames,
-        g_Timer.fps, fixpStr(g_Timer.fps_avg)
+        g_Timer.tick_simulated, g_Timer.tick_real,
+        g_Timer.frames, g_Timer.fps, fixpStr(g_Timer.fps_avg)
     );
 }
 
