@@ -1,7 +1,7 @@
 #ifndef ACTION_DEF_H
 #define ACTION_DEF_H
 
-#define ACTION_DELAY 10
+#define ACTION_DELAY 20
 #define ACTION_QUEUE_LENGTH 512
 
 enum ACTIONS
