@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "common.h"
+#include "_common.h"
 #include "system.h"
-#include "sys_init.h"
-#include "print.h"
-#include "draw_txt.h"
+#include "system_init.h"
+#include "text_output.h"
+#include "gfx_draw_text.h"
 
 System_t g_System = {0};
 
@@ -18,23 +18,23 @@ const char far* subsys_strings[NUM_SUBSYSTEMS] =
 
 static i_fnp subsys_functions[NUM_SUBSYSTEMS][2] =
 {
-    {initInput, quitInput},
-    {initTimer, quitTimer},
-    {initVideo, quitVideo},
-    {initAudio, quitAudio},
-    {initStateMgr, quitStateMgr}
+    {initInput,     quitInput   },
+    {initTimer,     quitTimer   },
+    {initVideo,     quitVideo   },
+    {initAudio,     quitAudio   },
+    {initStateMgr,  quitStateMgr}
 };
 
 static int initSubSystem(int sus) // sus = SUbSystem
 {
     int status;
 
-    #if SYSTEM_MSG == 1
+    #if DEBUG_SYSTEM == 1
     print(COLOR_LOG_SYSTEM, "Init %s...", subsys_strings[sus]);
     #endif
     if (isSubSysInit(sus))
     {
-        #if SYSTEM_MSG == 1
+        #if DEBUG_SYSTEM == 1
         print(COLOR_LOG_SYSTEM, "already init!\n");
         #endif
 
@@ -46,13 +46,13 @@ static int initSubSystem(int sus) // sus = SUbSystem
     {
         g_System.init_flags |= BIT(sus);
 
-        #if SYSTEM_MSG == 1
+        #if DEBUG_SYSTEM == 1
         print(COLOR_LOG_SYSTEM, "OK\n");
         #endif
 
         return SUCCESS;
     }
-    #if SYSTEM_MSG == 1
+    #if DEBUG_SYSTEM == 1
     printStatus(status);
     #endif
 
@@ -69,7 +69,7 @@ static int quitSubSystem(int sus)
 {
     int status;
 
-    #if SYSTEM_MSG == 1
+    #if DEBUG_SYSTEM == 1
     print(COLOR_LOG_SYSTEM, "Quit %s\n", subsys_strings[sus]);
     #endif
     if (!isSubSysInit(sus))    
@@ -79,13 +79,13 @@ static int quitSubSystem(int sus)
     if (status == SUCCESS)
     {
         g_System.init_flags &= ~BIT(sus);
-        #if SYSTEM_MSG == 1
+        #if DEBUG_SYSTEM == 1
         printStatus(SUCCESS);
         #endif
 
         return SUCCESS;
     }
-    #if SYSTEM_MSG == 1
+    #if DEBUG_SYSTEM == 1
     printStatus(status);
     #endif
 

@@ -1,17 +1,22 @@
 #include <string.h>
-#include "common.h"
+#include "_common.h"
+#include "_malloc.h"
+#include "_debug.h"
+
 #include "game.h"
-#include "malloc_.h"
-#include "maths2.h"
-#include "physics.h"
-#include "draw_def.h"
+#include "game_physics.h"
+
+#include "timer.h"
 #include "input.h"
-#include "poly.h"
-#include "debug.h"
+#include "action.h"
+
+#include "math_fixp_inline.h"
+#include "gfx_draw_defines.h"
+#include "gfx_poly.h"
 
 GameData_t g_Game = {0};
 
-int initGame()
+int gameInit()
 {
     g_Game.object_capacity = OBJ_CHUNK;
     g_Game.id_capacity = OBJ_CHUNK;
@@ -40,7 +45,7 @@ int initGame()
     return SUCCESS;
 }
 
-int quitGame()
+int gameQuit()
 {
     g_Game.object_capacity = 0;
     g_Game.id_capacity = 0;
@@ -50,22 +55,29 @@ int quitGame()
     return SUCCESS;
 }
 
-void enterGame()
+void gameEnter()
 {
-    g_Input.flags |= INPUT_FLAG_GAME_KEYS;
+    g_Input.flags |= INP_FLAG_GAME_CONTROL;
+    g_Timer.enable_ticks = 1;
 }
 
-void leaveGame()
+void gameLeave()
 {
-    g_Input.flags &= ~INPUT_FLAG_GAME_KEYS;
+    g_Input.flags &= ~INP_FLAG_GAME_CONTROL;
 }
 
-void updateGame()
+void gameUpdate()
 {
+    processActions();
     physics();
     #if DEBUG_INFO == 1
     sprintf(debug[DEBUG_OBJECTS], "Objects: %d\n", g_Game.object_count);
     #endif
+}
+
+void gameEsc()
+{
+    ;
 }
 
 static id_t getNewId()
@@ -83,7 +95,7 @@ static id_t getNewId()
 }
 
 id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
-                  fixp radius, fixp bbox_w, fixp bbox_h,
+                  fixp radius, fixp obb_w, fixp obb_h,
                   fixp scale, Poly_t* poly,  byte color)
 {
     Object_t* obj;
@@ -103,11 +115,11 @@ id_t createObject(Vec2 pos, Vec2 vel, Vec2 dir, brad angvel,
     obj->angle = vec2angle(dir);
     obj->angvel = angvel;
     obj->radius = radius;
-    obj->bbox_w = bbox_w;
-    obj->bbox_h = bbox_h;
+    obj->obb_w = obb_w;
+    obj->obb_h = obb_h;
     obj->poly = poly;
-    memcpy(obj->tPoly.points, poly->points, poly->num_points*sizeof(Vec2));
-    obj->tPoly.num_points = obj->poly->num_points;
+    memcpy(obj->transformed_poly.points, poly->points, poly->num_points*sizeof(Vec2));
+    obj->transformed_poly.num_points = obj->poly->num_points;
     obj->scale = scale;
     obj->color = color;
     obj->color2 = COLOR_HITBOX;

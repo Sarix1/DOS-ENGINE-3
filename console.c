@@ -2,15 +2,15 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "common.h"
+#include "_common.h"
 #include "console.h"
 #include "command.h"
 
-#include "txt_def.h"
-#include "txt_inp.h"
+#include "text_defines.h"
+#include "text_input.h"
 #include "input.h"
 #include "state.h"
-#include "print.h"
+#include "text_output.h"
 
 static byte far console_input_buffer[CONSOLE_INPUT_SIZE] = {0};
 static byte far console_log_buffer[CONSOLE_BUFFER_SIZE] = {0};
@@ -23,7 +23,7 @@ static TextInput_t ConsoleInput =
     0, 0, 0
 };
 
-Log_t g_ConsoleLog =
+static Log_t ConsoleLog =
 {
     {
         console_log_buffer,
@@ -41,35 +41,40 @@ Log_t g_ConsoleLog =
     COLOR_LOG_BG
 };
 
-int initConsole()
+int consoleInit()
 {
     resetInput(&ConsoleInput);
 
     return SUCCESS;
 }
 
-int quitConsole()
+int consoleQuit()
 {
     return SUCCESS;
 }
 
-void enterConsole()
+void consoleEnter()
 {
-    setStateFlags(STATE_CONSOLE, STATE_ENABLE_DRAW);
-    g_Input.flags |= (INPUT_FLAG_WRITE_TEXT|INPUT_FLAG_REPEAT_KEYS);
+    setStateFlags(STATE_CONSOLE, STATE_FLAG_DRAW);
+    g_Input.flags |= (INP_FLAG_WRITE_TEXT|INP_FLAG_REPEAT_KEYS);
     g_Input.input_field = &ConsoleInput;
     g_Input.input_callback = consoleInput;
 }
 
-void leaveConsole()
+void consoleLeave()
 {
-    clearStateFlags(STATE_CONSOLE, STATE_ENABLE_DRAW);
-    g_Input.flags &= ~(INPUT_FLAG_WRITE_TEXT|INPUT_FLAG_REPEAT_KEYS);
+    clearStateFlags(STATE_CONSOLE, STATE_FLAG_DRAW);
+    g_Input.flags &= ~(INP_FLAG_WRITE_TEXT|INP_FLAG_REPEAT_KEYS);
 }
 
-void updateConsole()
+void consoleUpdate()
 {
     ;
+}
+
+void consoleEsc()
+{
+    removeState(STATE_CONSOLE);
 }
 
 Params_t getCommandToken(char* str, int len)
@@ -86,7 +91,7 @@ Params_t getCommandToken(char* str, int len)
         }
     }
 
-    info.cmd.id = COMMAND_NULL;
+    info.cmd.id = CMD_NONE;
     return info;
 }
 
@@ -96,7 +101,7 @@ Params_t getCommandArgs(id_t cmd_id, char* arg_str)
 
     switch (cmd_id)
     {
-    case COMMAND_SPAWN:
+    case CMD_SPAWN:
         sscanf(arg_str, "%d %d %d", &args.pos.x, &args.pos.y, &args.pos.var.angle);
         break;
     }
@@ -104,12 +109,30 @@ Params_t getCommandArgs(id_t cmd_id, char* arg_str)
     return args;
 }
 
+// receives a va_list; use like fprintf
+void v_consoleWrite_f(byte color, byte* format, va_list args)
+{
+    int len = vsnprintf(format_buffer, FORMAT_BUFFER_SIZE, format, args);
+    len = MIN(len, FORMAT_BUFFER_SIZE);
+    ASSERT(len > 0);
+    logWrite(&ConsoleLog, format_buffer, len, color);
+}
+
+// receives multiple arguments; use like printf
+void consoleWrite_f(byte color, byte* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    v_logWrite_f(&ConsoleLog, color, format, args);
+    va_end(args);
+}
+
 void consoleInput(TextInput_t* input)
 {
-    Event_t cmd;
+    CommandEvent_t cmd;
     Params_t info = getCommandToken(input->buffer, input->length);
 
-    if (info.cmd.id != COMMAND_NULL)
+    if (info.cmd.id != CMD_NONE)
     {
         cmd.event.id = info.cmd.id;
         cmd.event.params = getCommandArgs(info.cmd.id, input->buffer + info.cmd.str_offset);
@@ -122,11 +145,11 @@ void consoleInput(TextInput_t* input)
     resetInput(input);
 }
 
-#include "draw_txt.h"
+#include "gfx_draw_text.h"
 
-void drawConsole()
+void consoleDraw()
 {
-    const int input_y_pos = g_ConsoleLog.vis_lines * CHAR_HEIGHT;
-    drawLog(0, 0, &g_ConsoleLog);
+    const int input_y_pos = ConsoleLog.vis_lines * CHAR_HEIGHT;
+    drawLog(0, 0, &ConsoleLog);
     drawInput(0, input_y_pos, MAX_SCREEN_COLS, &ConsoleInput, COLOR_INPUT_TEXT);
 }

@@ -1,7 +1,7 @@
-#include "common.h"
+#include "_common.h"
 #include "command.h"
-#include "cmd_sys.h"
-#include "cmd_game.h"
+#include "commands_system.h"
+#include "commands_game.h"
 
 // later separate to game_cmd.c etc.
 
@@ -13,13 +13,13 @@ char far* command_strings[NUM_COMMANDS] =
 #undef DECL_COMMAND_STRING
 
 #define INSERT_COMMAND_FNP(unused1, unused2, func) func,
-fnp_ev command_functions[NUM_COMMANDS] =
+fnp_cmd command_functions[NUM_COMMANDS] =
 {
     FOR_EACH_COMMAND(INSERT_COMMAND_FNP)
 };
 #undef INSERT_COMMAND_FNP
 
-void execCommand(Event_t cmd)
+void execCommand(CommandEvent_t cmd)
 {
     command_functions[cmd.event.id](cmd);
 }

@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "common.h"
+#include "_common.h"
 
 #define MENU_BG_COLOR       BLANK
 #define MENU_BORDER_COLOR   DARK_GREY

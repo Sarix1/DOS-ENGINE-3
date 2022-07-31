@@ -1,9 +1,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "common.h"
-#include "time_def.h"
-#include "time_typ.h"
+#include "_common.h"
+#include "timer_defines.h"
+#include "timer_structs.h"
 
 extern Timer_t g_Timer;
 
@@ -19,8 +19,14 @@ inline time_t getSeconds()
 
 inline time_t getTick()
 {
-    return g_Timer.ticks;
+    return g_Timer.tick_simulated;
 }
+
+inline time_t getTickReal()
+{
+    return g_Timer.tick_real;
+}
+
 
 int initTimer();
 int quitTimer();

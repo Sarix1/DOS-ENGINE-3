@@ -1,33 +1,41 @@
 #include "main.h"
-#include "print.h"
-#include "maths2.h"
+//#include "text_output.h"
+#include "input.h"
+#include "action.h"
+//#include "math_fixp_inline.h"
+//#include "gfx_draw_inline.h"
+
+extern controldata_t local_controldata; // temp
 
 int main(void)
 {
     init();
     
     pushState(STATE_GAME);
-    pushState(STATE_CONSOLE); 
-    print(COLOR_CYAN, "Stuff: %ld\n", abs(FIXP_ONE));
-    print(COLOR_CYAN, "Stuff: %ld\n", abs(-FIXP_ONE));
+    //pushState(STATE_CONSOLE);
 
     while (g_System.running)
     {
         int i;
-        g_Timer.last_cycle = g_Timer.time;
+
+        handleInputEvents();
         // process tick(s)
-        while (g_Timer.tick_accumulator >= g_Timer.tick_interval)
+        while (g_Timer.tick_simulated < g_Timer.tick_real)
         {
-            g_Timer.last_tick = g_Timer.time; // not used
-            input();
             updateStates();
-            g_Timer.ticks++;
-            g_Timer.tick_accumulator -= g_Timer.tick_interval;
+            if (g_Timer.enable_ticks)
+            {
+                g_Timer.tick_simulated++;
+                g_Timer.ticks_per_frame++;
+            }
+            else break;
         }
+
+
         // render frame
-        if (g_Timer.last_frame + g_Timer.frame_interval < g_Timer.time)
+        if (g_Timer.time >= g_Timer.next_frame)
         {
-            g_Timer.last_frame = g_Timer.time;
+            g_Timer.next_frame += g_Timer.frame_interval;
 
             drawStates();
             #if DEBUG_INFO == 1
@@ -37,12 +45,11 @@ int main(void)
 
             g_Timer.frames++;
             g_Timer.fps_count++;
-            
             #if DEBUG_INFO == 1
             updateStats();
             #endif
+            g_Timer.ticks_per_frame = 0;
         }
-        g_Timer.tick_accumulator += g_Timer.time - g_Timer.last_cycle;
     }
 
     quit();

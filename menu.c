@@ -1,11 +1,11 @@
 /*
 #include <string.h>
-#include "common.h"
+#include "_common.h"
 #include "menu.h"
-#include "txt_inp.h"
-#include "draw_txt.h"
+#include "text_input.h"
+#include "gfx_draw_text.h"
 //#include "input.h"
-#include "draw.h"
+#include "gfx_draw.h"
 
 void initMenu(Menu_t* menu)
 {
@@ -35,7 +35,7 @@ void initMenu(Menu_t* menu)
 
 void handleMenu(Menu_t* menu)
 {
-    if (KEY_WAS_HIT(KEYSTATE_DOWN) || KEY_WAS_HIT(KEY_PAD_2))
+    if (KEY_WAS_HIT(KEY_IS_DOWN) || KEY_WAS_HIT(KEY_PAD_2))
         menu->selection++;
     else if (KEY_WAS_HIT(KEY_UP) || KEY_WAS_HIT(KEY_PAD_8))
         menu->selection--;
