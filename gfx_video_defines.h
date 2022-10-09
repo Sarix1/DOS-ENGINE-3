@@ -1,8 +1,8 @@
 #ifndef GFX_VIDEO_DEFINES_H
 #define GFX_VIDEO_DEFINES_H
 
-#define VGA             0xA0000000l
-#define CHARSET_ROM     0xF000FA6El
+#define VGA             0x000A0000
+#define CHARSET_ROM     0xF000FA6El // real mode address
 
 #define VIDEO_INT       0x10
 #define INPUT_STATUS    0x3DA
@@ -24,7 +24,7 @@
 #if SCREEN_WIDTH == 320
 #define Y_OFFSET(i) (((i)<<8)+((i)<<6))
 #else
-#define Y_OFFSET(i) (i*SCREEN_WIDTH)
-#endif
+#define Y_OFFSET(i) ((i)*SCREEN_WIDTH)
+#endif/* GFX_VIDEO_DEFINES_H */
 
 #endif/* GFX_VIDEO_DEFINES_H */

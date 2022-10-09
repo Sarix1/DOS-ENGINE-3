@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "_common.h"
+#include "_malloc.h"
 #include "gfx_video.h"
 #include "gfx_palette.h"
-#include "_malloc.h"
+#include "text_output.h"
 
 Video_t g_Video = {0};
 
@@ -13,13 +14,15 @@ static void setVideo(byte mode)
 	union REGS regs;
 	regs.h.ah = SET_MODE;
 	regs.h.al = mode;
-	int86(VIDEO_INT, &regs, &regs);
+	int386(VIDEO_INT, &regs, &regs);
 }
 
 int initVideo()
 {
+    print(DEFAULT, "initVideo()...");
+
     g_Video.screen     = (byte*)VGA;
-    g_Video.off_screen = (byte far*)farmalloc(SCREEN_SIZE);
+    g_Video.off_screen = malloc(SCREEN_SIZE);//(byte far*)farmalloc(SCREEN_SIZE);
 
 	if (g_Video.off_screen != NULL)
 	{
@@ -34,13 +37,15 @@ int initVideo()
         return ERROR_MEMORY;
 	}
 
+    print(DEFAULT, "OK\n");
+
     return SUCCESS;
 }
 
 int quitVideo()
 {
     if (g_Video.off_screen != NULL)
-        farfree(g_Video.off_screen);
+        free(g_Video.off_screen);
 
     memset(VGA, 0, SCREEN_SIZE);
     setVideo(MODE_TEXT);

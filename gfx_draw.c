@@ -262,7 +262,7 @@ void drawRectFill_fast(int x, int y, int w, int h, byte color)
 {
     byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
     for (; (h--); pix += SCREEN_WIDTH)
-        _fmemset(pix, color, w);
+        memset(pix, color, w);
 }
 
 void drawRectFill(int x, int y, int w, int h, byte color)
@@ -291,7 +291,7 @@ void drawRectFill(int x, int y, int w, int h, byte color)
                     h = SCREEN_HEIGHT-y;
                 pix = g_Video.surface + Y_OFFSET(y) + x;
                 for (; (h--); pix += SCREEN_WIDTH)
-                    _fmemset(pix, color, w);
+                    memset(pix, color, w);
             }
         }
     }
@@ -314,8 +314,8 @@ void drawRectFrame(int x0, int y0, int w, int h, byte color)
     pix = g_Video.surface + Y_OFFSET(y0) + x0;
     w = x1-x0;
     h = y1-y0;
-    if (sides & OUTCODE_TOP)    _fmemset(pix,               color, w);
-    if (sides & OUTCODE_BOTTOM) _fmemset(pix+Y_OFFSET(h-1), color, w);
+    if (sides & OUTCODE_TOP)    memset(pix,               color, w);
+    if (sides & OUTCODE_BOTTOM) memset(pix+Y_OFFSET(h-1), color, w);
     if (sides & OUTCODE_LEFT)
     {
         if (sides & OUTCODE_RIGHT)
@@ -350,7 +350,7 @@ void drawRectFrame_fast(int x, int y, int w, int h, byte color)
     int i;
     byte far* pix = g_Video.surface + Y_OFFSET(y) + x;
 
-    _fmemset(pix, color, w);
+    memset(pix, color, w);
     if (h > 1)
     {
         byte far* pix2 = pix + w-1;
@@ -361,7 +361,7 @@ void drawRectFrame_fast(int x, int y, int w, int h, byte color)
             *pix2 = *pix = color;
         }
         pix += SCREEN_WIDTH;
-        _fmemset(pix, color, w);
+        memset(pix, color, w);
     }
 }
 
@@ -408,11 +408,11 @@ void drawCircleFill(int x, int y, int diameter, byte color)
         {
             dy_offset = Y_OFFSET(dy);
             width = (dx << 1) + remainder;
-            _fmemset(center - dy_offset-dx, color, width);
+            memset(center - dy_offset-dx, color, width);
             dy_offset -= r_offset;
 
         draw_circle_fill_lower:
-            _fmemset(center + dy_offset-dx, color, width);
+            memset(center + dy_offset-dx, color, width);
             y_scale_factor += inv_radius;
             dx = toInt(radius * fixpSinAcos(y_scale_factor));
             dy++;

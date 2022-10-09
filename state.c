@@ -104,6 +104,7 @@ void moveStateToTop(id_t id)
 
 void pushState(id_t id)
 {
+    print(DEFAULT, "SUCC!\n");
     if (States[id].flags & STATE_FLAG_ACTIVE)
     {
         if (getTopState()->id == id)

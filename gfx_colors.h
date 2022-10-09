@@ -22,7 +22,6 @@
 #define COLOR_INPUT_BG      COLOR_L_BLUE
 #define COLOR_INPUT_TEXT    COLOR_WHITE
 
-
 #define COLOR_LOG_BG        COLOR_BLUE
 #define COLOR_LOG_TEXT      COLOR_L_BLUE
 

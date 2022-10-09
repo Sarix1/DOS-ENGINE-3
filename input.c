@@ -9,6 +9,7 @@
 #include "action.h"
 
 #include "text_input.h"
+#include "text_output.h"
 #include "game_pause.h"
 
 Input_t g_Input = {0};
@@ -152,7 +153,7 @@ static void handleScanCode(byte scan)
         SCAN_EXT_PRTSC_START, 0x2A, 0xE0, SCAN_EXT_PRTSC_END,
         SCAN_EXT_PAUSE_START, 0x1D, 0x45, 0xE1, 0x9D, SCAN_EXT_PAUSE_END
     };
-
+    
     if (special == 0)
     {
         switch (scan)
@@ -201,21 +202,24 @@ static void interrupt (far *OldKeyHandler_ISR)(void);
 
 static void interrupt KeyHandler_ISR()
 {
+    asm cli;
     while (inportb(0x64) & 1)
         handleScanCode(inportb(0x60));
     outportb(0x20, 0x20);
+    asm sti;
 }
 
 static void initKeyHandler()
 {
     byte far *bios_key_state;
+
     asm cli;
     // save address of current keyhandler interrupt function
     OldKeyHandler_ISR = getvect(KEYHANDLER_INT);
     // caps lock & num lock off
     bios_key_state = MK_FP(0x040, 0x017);
     *bios_key_state &= (~(32|64));
-    OldKeyHandler_ISR(); 
+    //OldKeyHandler_ISR(); 
     // replace old keyhandler with new keyhandler function
     setvect(KEYHANDLER_INT, KeyHandler_ISR);
     asm sti;

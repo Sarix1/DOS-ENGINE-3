@@ -29,12 +29,12 @@ inline void drawPixel(int x, int y, byte color)
 
 inline void drawFill(byte color)
 {
-    _fmemset(g_Video.surface, color, SCREEN_SIZE);
+    memset(g_Video.surface, color, SCREEN_SIZE);
 }
 
 inline void drawLineHorz_fast(int x, int y, int len, byte color)
 {
-    _fmemset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
+    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineHorz2_fast(int x, int y, int len, byte color)
@@ -44,7 +44,7 @@ inline void drawLineHorz2_fast(int x, int y, int len, byte color)
         x += len;
         len = -len;
     }
-    _fmemset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
+    memset(g_Video.surface+(x) + Y_OFFSET(y), color, len);
 }
 
 inline void drawLineVert_fast(int x, int y, int len, byte color)

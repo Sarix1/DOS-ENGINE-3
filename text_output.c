@@ -25,7 +25,7 @@ void print(int color, char* format, ...)
         color_ = COLOR_LOG_TEXT;
     else
         color_ = color;
-    
+    /*
     if (g_System.print_flags & PRINT_FLAG_STDERR)
     {
         va_start(args, format);
@@ -41,7 +41,7 @@ void print(int color, char* format, ...)
         vfprintf(stdout, format, args);
         va_end(args);
     }
-
+*/
     if (g_System.print_flags & PRINT_FLAG_CONSOLE)
     {
         va_start(args, format);
