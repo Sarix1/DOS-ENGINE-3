@@ -1,6 +1,7 @@
 #include <dos.h>
 #include <conio.h>
 #include "_common.h"
+#include "_dpmi.h"
 
 #include "input.h"
 #include "timer.h"
@@ -27,7 +28,7 @@ void initKeyMap() // temporary function; keymaps should be loaded from files; de
 
 void printScreen()
 {
-    asm int 5;
+    _asm int 5;
     ;// make a screenshot or something
 }
 
@@ -153,6 +154,8 @@ static void handleScanCode(byte scan)
         SCAN_EXT_PRTSC_START, 0x2A, 0xE0, SCAN_EXT_PRTSC_END,
         SCAN_EXT_PAUSE_START, 0x1D, 0x45, 0xE1, 0x9D, SCAN_EXT_PAUSE_END
     };
+
+    quit();
     
     if (special == 0)
     {
@@ -198,39 +201,57 @@ static void handleScanCode(byte scan)
     generateKeyEvent(keycode, keystate);
 }
 
-static void interrupt (far *OldKeyHandler_ISR)(void);
+static void (__interrupt __far *OldKeyHandler_ISR)();
 
-static void interrupt KeyHandler_ISR()
+static void __interrupt __far KeyHandler_ISR()
 {
-    asm cli;
-    while (inportb(0x64) & 1)
-        handleScanCode(inportb(0x60));
-    outportb(0x20, 0x20);
-    asm sti;
+    byte temp;
+
+    //_asm cli;
+
+    //_chain_intr(OldKeyHandler_ISR);
+    
+    while (inp(0x64) & 1)
+        ;//handleScanCode(inp(0x60));
+
+	temp = inp(0x61);	// Get current port 61h state
+	temp |= 0x80;		// Turn on bit 7 to signal clear keybrd
+	outp(0x61, temp);	// Send to port
+	temp &= 0x7f;		// Turn off bit 7 to signal break
+	outp(0x61, temp);	// Send to port
+	outp(0x20, 0x20);	// Reset interrupt controller
+
+    //_asm sti;
 }
+
+static void KeyHandler_end() {};
 
 static void initKeyHandler()
 {
     byte far *bios_key_state;
 
-    asm cli;
+    dpmi_lock_region((void near*)KeyHandler_ISR, (char*)KeyHandler_end - (char near*)KeyHandler_ISR);
+    dpmi_lock_region(&g_Input, sizeof(Input_t));
+    //dpmi_lock_region(&g_Input.EventQueue, sizeof(KB_QUEUE_LENGTH)*sizeof(InputEvent_t));
+    //dpmi_lock_region(&g_Input.KeyStates, sizeof(KB_ARRAY_SIZE));
+    //_asm cli;
     // save address of current keyhandler interrupt function
-    OldKeyHandler_ISR = getvect(KEYHANDLER_INT);
+    OldKeyHandler_ISR = _dos_getvect(KEYHANDLER_INT);
     // caps lock & num lock off
     bios_key_state = MK_FP(0x040, 0x017);
     *bios_key_state &= (~(32|64));
     //OldKeyHandler_ISR(); 
     // replace old keyhandler with new keyhandler function
-    setvect(KEYHANDLER_INT, KeyHandler_ISR);
-    asm sti;
+    _dos_setvect(KEYHANDLER_INT, KeyHandler_ISR);
+    //_asm sti;
 }
 
 static void quitKeyHandler()
 {
     // restore old keyhandler
-    asm cli;
-    setvect(KEYHANDLER_INT, OldKeyHandler_ISR);
-    asm sti;
+    //_asm cli;
+    _dos_setvect(KEYHANDLER_INT, OldKeyHandler_ISR);
+    //_asm sti;
 }
 
 int initInput()

@@ -5,7 +5,7 @@
 #include "_malloc.h"
 #include "gfx_video.h"
 #include "gfx_palette.h"
-#include "text_output.h"
+//#include "text_output.h"
 
 Video_t g_Video = {0};
 
@@ -19,10 +19,8 @@ static void setVideo(byte mode)
 
 int initVideo()
 {
-    print(DEFAULT, "initVideo()...");
-
     g_Video.screen     = (byte*)VGA;
-    g_Video.off_screen = malloc(SCREEN_SIZE);//(byte far*)farmalloc(SCREEN_SIZE);
+    g_Video.off_screen = malloc(SCREEN_SIZE);//(byte far*)_fmalloc(SCREEN_SIZE);
 
 	if (g_Video.off_screen != NULL)
 	{
@@ -36,8 +34,6 @@ int initVideo()
 
         return ERROR_MEMORY;
 	}
-
-    print(DEFAULT, "OK\n");
 
     return SUCCESS;
 }
@@ -55,9 +51,9 @@ int quitVideo()
 
 void render()
 {
-	while (inportb(INPUT_STATUS) & VRETRACE)
+	while (inp(INPUT_STATUS) & VRETRACE)
         ;
-	while ((inportb(INPUT_STATUS) & VRETRACE) == 0)
+	while ((inp(INPUT_STATUS) & VRETRACE) == 0)
         ;
 	memcpy(g_Video.screen, g_Video.off_screen, SCREEN_SIZE);
     memset(g_Video.off_screen, 0, SCREEN_SIZE);

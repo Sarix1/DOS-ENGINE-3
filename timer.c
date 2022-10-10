@@ -49,19 +49,19 @@ static void interrupt far Timer_ISR(void)
 
 static void setTimer(uint16_t new_count)
 {
-    asm cli;
-    outportb(CONTROL_8253, CONTROL_WORD);
-    outportb(COUNTER_0, LOW_BYTE(new_count));
-    outportb(COUNTER_0, HIGH_BYTE(new_count));
-    asm sti;
+    _asm cli;
+    outp(CONTROL_8253, CONTROL_WORD);
+    outp(COUNTER_0, LOW_BYTE(new_count));
+    outp(COUNTER_0, HIGH_BYTE(new_count));
+    _asm sti;
 }
 
 int quitTimer()
 {
-    asm cli;
-    setvect(TIME_KEEPER_INT, old_Timer_ISR);
+    _asm cli;
+    _dos_setvect(TIME_KEEPER_INT, old_Timer_ISR);
     setTimer(TIMER_18HZ);
-    asm sti;
+    _asm sti;
 
     return SUCCESS;
 }
@@ -94,11 +94,11 @@ int initTimer()
     g_Timer.fps_avg         = 0;
 
     //timer
-    asm cli;
-    old_Timer_ISR = getvect(TIME_KEEPER_INT);
-    setvect(TIME_KEEPER_INT, &Timer_ISR);
+    _asm cli;
+    old_Timer_ISR = _dos_getvect(TIME_KEEPER_INT);
+    _dos_setvect(TIME_KEEPER_INT, &Timer_ISR);
     setTimer(TIMER_1000HZ);
-    asm sti;
+    _asm sti;
 
     // I suspect delay causes the interrupts to slow down, 
     // so the error checking code below always reports TIMER_SLOW
