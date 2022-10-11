@@ -13,7 +13,7 @@ int main(void)
 
     init();
     pushState(STATE_GAME);
-    pushState(STATE_CONSOLE);
+    //pushState(STATE_CONSOLE);
 
     while (g_System.running)
     {

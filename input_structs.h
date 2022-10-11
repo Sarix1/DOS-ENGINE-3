@@ -6,6 +6,12 @@
 
 typedef struct
 {
+    byte code;
+    time_t tick;
+} KeyScan_t;
+
+typedef struct
+{
     action_id_t bindings[256];
 } KeyMap_t;
 

@@ -13,10 +13,12 @@
 #include "text_output.h"
 #include "game_pause.h"
 
-Input_t g_Input = {0};
-KeyMap_t KeyMap_Basic = {0};
+static volatile KeyScan_t scan_buffer[SCAN_BUFFER_SIZE];
+static volatile int scan_head = 0;
+static volatile int scan_tail = 0;
 
-// later should be malloc'd when game begins / player joins etc.
+Input_t g_Input = {0};// later should be malloc'd when game begins / player joins etc.
+KeyMap_t KeyMap_Basic = {0};
 
 void initKeyMap() // temporary function; keymaps should be loaded from files; defaults be static arrays
 {
@@ -86,8 +88,19 @@ int handleGameControl(InputEvent_t event)
     return NOT_HANDLED;
 }
 
+void drainScanBuffer()
+{
+    while (scan_head != scan_tail)
+    {
+       handleScanCode(scan_buffer[scan_head].code, scan_buffer[scan_head].tick);
+       incAndWrap(scan_head, SCAN_BUFFER_SIZE);
+    }
+}
+
 void handleInputEvents() // keymap should be an array of commands
 {
+    drainScanBuffer();
+
     while (g_Input.queue_head != g_Input.queue_tail) 
     {
         InputEvent_t event = g_Input.EventQueue[g_Input.queue_head];
@@ -120,11 +133,11 @@ static inline void pushInputEvent(InputEvent_t event)
         g_Input.EventQueue[g_Input.queue_tail++] = event;
 }
 
-static void generateKeyEvent(byte keycode, byte keystate)
+static void generateKeyEvent(byte keycode, byte keystate, time_t tick)
 {
-    InputEvent_t event;
+    static InputEvent_t event;
     event.data.keycode = keycode;
-    event.tick = getTickReal();
+    event.tick = tick;
 
     if (keystate == EV_INP_KEY_REL)
     {
@@ -144,7 +157,7 @@ static void generateKeyEvent(byte keycode, byte keystate)
     }
 }
 
-static void handleScanCode(byte scan)
+static void handleScanCode(byte scan, time_t tick)
 {
     byte keycode, keystate;
     static byte extended = 0;
@@ -155,8 +168,6 @@ static void handleScanCode(byte scan)
         SCAN_EXT_PAUSE_START, 0x1D, 0x45, 0xE1, 0x9D, SCAN_EXT_PAUSE_END
     };
 
-    quit();
-    
     if (special == 0)
     {
         switch (scan)
@@ -175,15 +186,15 @@ static void handleScanCode(byte scan)
         switch (scan)
         {
         case SCAN_EXT_PRTSC_END:
-            generateKeyEvent(KEY_PRINT_SCRN, EV_INP_KEY_HIT);
+            generateKeyEvent(KEY_PRINT_SCRN, EV_INP_KEY_HIT, tick);
             special = 0;
             return;
         case SCAN_EXT_PRTSC_END|KEYCODE_RELEASED:
-            generateKeyEvent(KEY_PRINT_SCRN, EV_INP_KEY_REL);
+            generateKeyEvent(KEY_PRINT_SCRN, EV_INP_KEY_REL, tick);
             special = 0;
             return;
         case SCAN_EXT_PAUSE_END:
-            generateKeyEvent(KEY_PAUSE, EV_INP_KEY_HIT);
+            generateKeyEvent(KEY_PAUSE, EV_INP_KEY_HIT, tick);
             special = 0;
             return;
         default:
@@ -198,30 +209,40 @@ static void handleScanCode(byte scan)
     keystate = (scan & KEYCODE_RELEASED) ? EV_INP_KEY_REL : EV_INP_KEY_HIT;
     extended = 0;
 
-    generateKeyEvent(keycode, keystate);
+    generateKeyEvent(keycode, keystate, tick);
 }
 
 static void (__interrupt __far *OldKeyHandler_ISR)();
 
-static void __interrupt __far KeyHandler_ISR()
+static void __interrupt KeyHandler_ISR()
 {
     byte temp;
 
-    //_asm cli;
-
-    //_chain_intr(OldKeyHandler_ISR);
+    _asm cli;
     
-    while (inp(0x64) & 1)
-        ;//handleScanCode(inp(0x60));
+    while ((inp(0x64) & 1))
+    {
+        time_t tick = getTickReal();
+        byte scan = inp(0x60);
+        int scan_tail_next = rIncAndWrap(scan_tail, SCAN_BUFFER_SIZE);
 
+        if (scan_tail_next != scan_head)
+        {
+            scan_buffer[scan_tail].code = scan;
+            scan_buffer[scan_tail].tick = tick;
+            scan_tail = scan_tail_next;
+        }
+    }
+    /*
 	temp = inp(0x61);	// Get current port 61h state
 	temp |= 0x80;		// Turn on bit 7 to signal clear keybrd
 	outp(0x61, temp);	// Send to port
 	temp &= 0x7f;		// Turn off bit 7 to signal break
 	outp(0x61, temp);	// Send to port
-	outp(0x20, 0x20);	// Reset interrupt controller
+    */
+    outp(0x20, 0x20);
 
-    //_asm sti;
+    _asm sti;
 }
 
 static void KeyHandler_end() {};
@@ -230,11 +251,12 @@ static void initKeyHandler()
 {
     byte far *bios_key_state;
 
-    dpmi_lock_region((void near*)KeyHandler_ISR, (char*)KeyHandler_end - (char near*)KeyHandler_ISR);
+    dpmi_lock_region((void*)KeyHandler_ISR, (char*)KeyHandler_end - (char*)KeyHandler_ISR);
     dpmi_lock_region(&g_Input, sizeof(Input_t));
     //dpmi_lock_region(&g_Input.EventQueue, sizeof(KB_QUEUE_LENGTH)*sizeof(InputEvent_t));
     //dpmi_lock_region(&g_Input.KeyStates, sizeof(KB_ARRAY_SIZE));
-    //_asm cli;
+
+    _asm cli;
     // save address of current keyhandler interrupt function
     OldKeyHandler_ISR = _dos_getvect(KEYHANDLER_INT);
     // caps lock & num lock off
@@ -243,7 +265,7 @@ static void initKeyHandler()
     //OldKeyHandler_ISR(); 
     // replace old keyhandler with new keyhandler function
     _dos_setvect(KEYHANDLER_INT, KeyHandler_ISR);
-    //_asm sti;
+    _asm sti;
 }
 
 static void quitKeyHandler()
